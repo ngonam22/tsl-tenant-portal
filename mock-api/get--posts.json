@@ -1,0 +1,85 @@
+{
+  "items": [
+    {
+      "post_id": "demo-thread-001",
+      "provider": "threads",
+      "provider_url": null,
+      "text_preview": "Bài viết minh hoạ đề cập đến trải nghiệm chất lượng sản phẩm gần đây.",
+      "post_kind": "post",
+      "lang": "vi",
+      "created_at_ms": 1785285600000,
+      "analyzed": true,
+      "analyzed_at": "2026-07-29T00:41:00.000Z",
+      "analysis_version": "demo-v1",
+      "sentiment_label": "neg",
+      "toxic": false,
+      "matched_keywords": ["thương hiệu mẫu"],
+      "engagement": null,
+      "llm_routed": false,
+      "llm_outcome": null,
+      "skipped": null,
+      "analysis": {
+        "steps": {},
+        "done": 4,
+        "total": 4,
+        "complete": true,
+        "skipped": null
+      }
+    },
+    {
+      "post_id": "demo-thread-002",
+      "provider": "threads",
+      "provider_url": null,
+      "text_preview": "Bài viết minh hoạ thảo luận về tốc độ phản hồi của đội ngũ hỗ trợ.",
+      "post_kind": "reply",
+      "lang": "vi",
+      "created_at_ms": 1785282900000,
+      "analyzed": true,
+      "analyzed_at": "2026-07-28T23:56:00.000Z",
+      "analysis_version": "demo-v1",
+      "sentiment_label": "neutral",
+      "toxic": false,
+      "matched_keywords": ["hỗ trợ khách hàng"],
+      "engagement": null,
+      "llm_routed": false,
+      "llm_outcome": null,
+      "skipped": null,
+      "analysis": {
+        "steps": {},
+        "done": 4,
+        "total": 4,
+        "complete": true,
+        "skipped": null
+      }
+    },
+    {
+      "post_id": "demo-thread-003",
+      "provider": "threads",
+      "provider_url": null,
+      "text_preview": "Bài viết minh hoạ ghi nhận phản hồi tích cực về một cải tiến mới.",
+      "post_kind": "post",
+      "lang": "vi",
+      "created_at_ms": 1785278400000,
+      "analyzed": true,
+      "analyzed_at": "2026-07-28T22:41:00.000Z",
+      "analysis_version": "demo-v1",
+      "sentiment_label": "pos",
+      "toxic": false,
+      "matched_keywords": ["sản phẩm mẫu"],
+      "engagement": null,
+      "llm_routed": false,
+      "llm_outcome": null,
+      "skipped": null,
+      "analysis": {
+        "steps": {},
+        "done": 4,
+        "total": 4,
+        "complete": true,
+        "skipped": null
+      }
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "limit": 20
+}

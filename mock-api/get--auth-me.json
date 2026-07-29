@@ -1,0 +1,7 @@
+{
+  "sub": "demo-user",
+  "email": "tenant-demo@invalid.example",
+  "role": "member",
+  "tenant_id": "tenant-demo",
+  "is_platform_staff": false
+}

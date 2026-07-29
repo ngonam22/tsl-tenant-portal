@@ -1,0 +1,59 @@
+{
+  "trends": [
+    {
+      "trendable_unit_type": "topic_cluster",
+      "trendable_unit_id": "demo-topic-quality",
+      "label": "Quan ngại về chất lượng sản phẩm",
+      "trend_score": 8.42,
+      "gate_passed": true,
+      "volume": 126,
+      "velocity": 3.1,
+      "engagement_total": 5420,
+      "sentiment_dist": {
+        "pos": 0.1,
+        "neg": 0.72,
+        "neutral": 0.12,
+        "mixed": 0.06
+      },
+      "toxicity_pct": 12.3,
+      "distinct_authors": 47
+    },
+    {
+      "trendable_unit_type": "topic_cluster",
+      "trendable_unit_id": "demo-topic-boycott",
+      "label": "Lời kêu gọi tẩy chay",
+      "trend_score": 7.15,
+      "gate_passed": true,
+      "volume": 84,
+      "velocity": 2.4,
+      "engagement_total": 3180,
+      "sentiment_dist": {
+        "pos": 0.08,
+        "neg": 0.76,
+        "neutral": 0.11,
+        "mixed": 0.05
+      },
+      "toxicity_pct": 9.8,
+      "distinct_authors": 34
+    },
+    {
+      "trendable_unit_type": "topic_cluster",
+      "trendable_unit_id": "demo-topic-support",
+      "label": "Trải nghiệm hỗ trợ khách hàng",
+      "trend_score": 5.63,
+      "gate_passed": true,
+      "volume": 52,
+      "velocity": 1.4,
+      "engagement_total": 1460,
+      "sentiment_dist": {
+        "pos": 0.22,
+        "neg": 0.51,
+        "neutral": 0.21,
+        "mixed": 0.06
+      },
+      "toxicity_pct": 4.1,
+      "distinct_authors": 21
+    }
+  ],
+  "next_cursor": null
+}

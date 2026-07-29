@@ -1,0 +1,16 @@
+{
+  "clusters": [
+    {
+      "id": "demo-watchlist-brand",
+      "name": "Thương hiệu chính",
+      "terms": ["thương hiệu mẫu", "sản phẩm mẫu"],
+      "active": true
+    },
+    {
+      "id": "demo-watchlist-service",
+      "name": "Trải nghiệm dịch vụ",
+      "terms": ["hỗ trợ khách hàng", "chăm sóc khách hàng"],
+      "active": true
+    }
+  ]
+}

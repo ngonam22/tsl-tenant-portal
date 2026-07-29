@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "post_id": "demo-post-001",
+      "severity": "critical",
+      "score": 92.4,
+      "excerpt": "Một số tài khoản đang lan truyền cáo buộc chưa được kiểm chứng về chất lượng của sản phẩm mẫu.",
+      "triage_status": "new",
+      "created_at": "2026-07-29T01:20:00.000Z"
+    },
+    {
+      "post_id": "demo-post-002",
+      "severity": "high",
+      "score": 78.1,
+      "excerpt": "Thảo luận kêu gọi tẩy chay thương hiệu mẫu tăng nhanh trong vài giờ gần đây.",
+      "triage_status": "new",
+      "created_at": "2026-07-29T00:45:00.000Z"
+    },
+    {
+      "post_id": "demo-post-003",
+      "severity": "high",
+      "score": 71.6,
+      "excerpt": "Nhiều phản ánh tổng hợp cho rằng thời gian phản hồi hỗ trợ đang chậm hơn bình thường.",
+      "triage_status": "acknowledged",
+      "created_at": "2026-07-28T23:30:00.000Z"
+    }
+  ]
+}

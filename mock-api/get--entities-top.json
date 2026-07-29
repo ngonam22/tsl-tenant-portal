@@ -1,0 +1,41 @@
+{
+  "entities": [
+    {
+      "type": "BRAND",
+      "value": "Thương hiệu mẫu",
+      "mentions": 84,
+      "sentiment_dist": {
+        "pos": 0.18,
+        "neg": 0.57,
+        "neutral": 0.19,
+        "mixed": 0.06
+      },
+      "top_clusters": [
+        {
+          "cluster_id": "demo-topic-quality",
+          "label": "Quan ngại về chất lượng sản phẩm",
+          "post_count": 31
+        }
+      ]
+    },
+    {
+      "type": "PRODUCT",
+      "value": "Sản phẩm mẫu A",
+      "mentions": 46,
+      "sentiment_dist": {
+        "pos": 0.24,
+        "neg": 0.48,
+        "neutral": 0.22,
+        "mixed": 0.06
+      },
+      "top_clusters": [
+        {
+          "cluster_id": "demo-topic-support",
+          "label": "Trải nghiệm hỗ trợ khách hàng",
+          "post_count": 17
+        }
+      ]
+    }
+  ],
+  "next_cursor": null
+}

@@ -1,0 +1,29 @@
+{
+  "window": "24h",
+  "status": "ready",
+  "reason": null,
+  "as_of_ms": 1785287400000,
+  "source_as_of_ms": 1785287340000,
+  "generated_at": "2026-07-29T01:10:00.000Z",
+  "model_id": "snapshot-demo",
+  "brief": {
+    "headline": "Thảo luận về chất lượng tăng trong khi một chủ đề tẩy chay đang lan rộng",
+    "bullets": [
+      {
+        "trendable_unit_type": "entity",
+        "trendable_unit_id": "BRAND:demo",
+        "title": "Phản ánh về chất lượng đang tăng",
+        "why": "Lượng bài viết tiêu cực của dữ liệu minh hoạ tăng trong vài giờ gần nhất.",
+        "evidence": ["volume", "velocity", "sentiment"]
+      },
+      {
+        "trendable_unit_type": "topic_cluster",
+        "trendable_unit_id": "demo-topic-boycott",
+        "title": "Thảo luận tẩy chay mở rộng",
+        "why": "Nhiều tác giả minh hoạ đang cùng thảo luận về một lời kêu gọi tẩy chay.",
+        "evidence": ["breadth", "engagement"]
+      }
+    ]
+  },
+  "source_units": null
+}
