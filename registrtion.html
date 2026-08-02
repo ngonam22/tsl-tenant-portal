@@ -1,0 +1,1838 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TSL - Khởi tạo khách hàng mới</title>
+<meta name="description" content="Trang thiết lập khách hàng mới cho hệ thống TSL: thông tin, gói dịch vụ, từ khoá theo dõi, người dùng đầu tiên." />
+
+<!-- Đặt chủ đề trước khi vẽ để không bị nháy màu. -->
+<script>
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem("tsl-theme"); } catch (e) {}
+    var dark = saved ? saved === "dark"
+      : window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  })();
+</script>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   TSL - Trang khởi tạo khách hàng (một file, không cần build, chạy offline)
+
+   Token màu lấy từ services/admin-next/styles/globals.css để giữ đúng
+   nhận diện của hệ thống.
+
+   QUY TẮC BÁN KÍNH GÓC (một hệ, áp dụng toàn trang):
+     - thẻ lớn (card, panel)      : 16px
+     - ô nhập, nút, khối nhỏ      : 10px
+     - chip, nhãn trạng thái      : bo tròn hết
+     - đoạn mã trong câu (code)   : 6px
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --primary: #6a9cfd;
+  --primary-dark: #4a7ee0;
+  --primary-bg: #ebf2ff;
+  --teal: #34b391;
+  --teal-bg: #eafbf6;
+
+  --bg: #ffffff;
+  --bg-sub: #f6f8fc;
+  --surface: #ffffff;
+  --surface-2: #f6f8fc;
+  --text: #1e2235;
+  --text-sub: #5b6478;
+  --text-faint: #8a93a6;
+  --border: rgba(30, 34, 53, 0.12);
+  --border-soft: rgba(30, 34, 53, 0.07);
+  --ring: rgba(106, 156, 253, 0.35);
+
+  --success: #1f9d6d;
+  --success-bg: #e7f8f0;
+  --warning: #a76a00;
+  --warning-bg: #fff5e0;
+  --danger: #cf3b3b;
+  --danger-bg: #fdeceb;
+
+  --shadow-sm: 0 1px 2px rgba(30, 34, 53, 0.05);
+  --shadow-md: 0 4px 16px -4px rgba(30, 34, 53, 0.1), 0 1px 3px rgba(30, 34, 53, 0.05);
+  --shadow-lg: 0 24px 48px -20px rgba(46, 62, 110, 0.22), 0 2px 8px rgba(30, 34, 53, 0.05);
+
+  --r-card: 16px;
+  --r-ctl: 10px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --font: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI Variable Text",
+          "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+[data-theme="dark"] {
+  --primary: #7fabff;
+  --primary-dark: #a8c8ff;
+  --primary-bg: #1b2540;
+  --teal: #61d7b8;
+  --teal-bg: #16302a;
+
+  --bg: #12141f;
+  --bg-sub: #0e1017;
+  --surface: #1a1d2b;
+  --surface-2: #212537;
+  --text: #e8eaf2;
+  --text-sub: #a7b0c2;
+  --text-faint: #7d8697;
+  --border: rgba(255, 255, 255, 0.13);
+  --border-soft: rgba(255, 255, 255, 0.07);
+  --ring: rgba(127, 171, 255, 0.4);
+
+  --success: #58d3a2;
+  --success-bg: #14322a;
+  --warning: #f0b95c;
+  --warning-bg: #322710;
+  --danger: #f58a8a;
+  --danger-bg: #3a1e1f;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 48px -20px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; }
+
+/* Thuộc tính hidden phải luôn thắng. Nhiều khối ở dưới đặt display:flex, mà bất
+   kỳ khai báo display nào của trang cũng thắng [hidden] của trình duyệt, nên nếu
+   không có dòng này thì nút Quay lại, cảnh báo gói, báo lỗi hạn mức và thanh
+   điều hướng bước đều không ẩn được. */
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3 { margin: 0; letter-spacing: -0.022em; font-weight: 640; line-height: 1.12; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+svg { display: block; }
+a { color: var(--primary-dark); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Thanh trên dính ở đầu trang cao 68px, nên mọi mốc nhảy tới phải chừa chỗ,
+   không thì tiêu đề bị thanh trên che mất. */
+section[id], .step, .cluster { scroll-margin-top: 88px; }
+
+.shell { max-width: 1200px; margin: 0 auto; padding-inline: 24px; }
+@media (max-width: 640px) { .shell { padding-inline: 16px; } }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── Thanh điều hướng ─────────────────────────────────────────────────── */
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  height: 68px; display: flex; align-items: center;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  backdrop-filter: saturate(160%) blur(12px);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--border-soft);
+}
+.topbar-in { display: flex; align-items: center; gap: 12px; width: 100%; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 660; letter-spacing: -0.02em; }
+.brand span:last-child { white-space: nowrap; }
+/* Máy nhỏ: chỉ giữ dấu hiệu TSL, để tên dài không xuống hai dòng trong thanh trên. */
+@media (max-width: 480px) { .brand span:last-child { display: none; } }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: var(--r-ctl);
+  background: linear-gradient(150deg, var(--primary), var(--primary-dark));
+  color: #fff; display: grid; place-items: center;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px -2px var(--ring);
+}
+.topbar-spacer { flex: 1; }
+.topnav { display: flex; align-items: center; gap: 4px; }
+.topnav a {
+  padding: 7px 12px; border-radius: var(--r-ctl);
+  font-size: 14px; color: var(--text-sub); white-space: nowrap;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.topnav a:hover { background: var(--surface-2); color: var(--text); text-decoration: none; }
+@media (max-width: 720px) { .topnav { display: none; } }
+
+.icon-btn {
+  width: 38px; height: 38px; flex: none;
+  display: grid; place-items: center;
+  border: 1px solid var(--border); border-radius: var(--r-ctl);
+  background: var(--surface); color: var(--text-sub); cursor: pointer;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), transform 0.12s var(--ease);
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--text); }
+.icon-btn:active { transform: translateY(1px); }
+
+/* ── Nút ──────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 20px; white-space: nowrap;
+  border-radius: var(--r-ctl); border: 1px solid transparent;
+  font-size: 15px; font-weight: 560; cursor: pointer;
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease),
+              transform 0.12s var(--ease), box-shadow 0.18s var(--ease);
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 3px solid var(--ring); outline-offset: 2px; }
+.btn-primary { background: var(--primary-dark); color: #fff; box-shadow: var(--shadow-sm); }
+.btn-primary:hover { background: color-mix(in srgb, var(--primary-dark) 88%, #000); }
+[data-theme="dark"] .btn-primary { background: var(--primary); color: #0d1220; }
+[data-theme="dark"] .btn-primary:hover { background: var(--primary-dark); }
+.btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); }
+.btn-ghost:hover { background: var(--surface-2); }
+.btn-quiet { background: transparent; color: var(--text-sub); height: 38px; padding: 0 12px; font-size: 14px; }
+.btn-quiet:hover { background: var(--surface-2); color: var(--text); }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-sm { height: 36px; padding: 0 14px; font-size: 14px; }
+
+/* ── Khu vực mở đầu ───────────────────────────────────────────────────── */
+.hero { padding: 76px 0 88px; border-bottom: 1px solid var(--border-soft); }
+@media (max-width: 900px) { .hero { padding: 48px 0 56px; } }
+.hero-grid {
+  display: grid; grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px; align-items: center;
+}
+@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 36px; } }
+.hero h1 { font-size: clamp(34px, 4.6vw, 54px); max-width: 20ch; }
+.hero-sub {
+  margin-top: 22px; font-size: 17.5px; color: var(--text-sub); max-width: 44ch;
+}
+.hero-cta { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* Thẻ thử từ khoá: đây là hàm chuẩn hoá THẬT của hệ thống đang chạy. */
+.probe {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-card); padding: 24px; box-shadow: var(--shadow-lg);
+}
+.probe-title { font-size: 15px; font-weight: 600; }
+.probe-note { font-size: 13.5px; color: var(--text-faint); margin-top: 4px; }
+.probe-out {
+  margin-top: 18px; padding: 16px; border-radius: var(--r-ctl);
+  background: var(--surface-2); border: 1px solid var(--border-soft);
+}
+.probe-row { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
+.probe-row + .probe-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-soft); }
+.probe-key { color: var(--text-faint); width: 116px; flex: none; }
+.probe-val { font-family: var(--font-mono); font-size: 13.5px; word-break: break-all; }
+.probe-val.hit { color: var(--success); }
+.probe-val.miss { color: var(--text-faint); }
+
+/* ── Bố cục chung của một mảng nội dung ───────────────────────────────── */
+.band { padding: 84px 0; }
+.band.alt { background: var(--bg-sub); border-block: 1px solid var(--border-soft); }
+@media (max-width: 900px) { .band { padding: 56px 0; } }
+.band-head { max-width: 52ch; }
+.band-head h2 { font-size: clamp(26px, 3.4vw, 36px); }
+.band-head p { margin-top: 14px; color: var(--text-sub); font-size: 16.5px; }
+
+/* ── Hai gói dịch vụ ──────────────────────────────────────────────────── */
+.plans { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 860px) { .plans { grid-template-columns: 1fr; } }
+.plan {
+  position: relative; display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-card); padding: 30px;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.2s var(--ease);
+}
+.plan:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.plan.featured {
+  border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  box-shadow: var(--shadow-md);
+  background:
+    radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--primary-bg) 90%, transparent), transparent 62%),
+    var(--surface);
+}
+.plan-flag {
+  position: absolute; top: 20px; right: 20px;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--primary-dark); color: #fff;
+  font-size: 11.5px; font-weight: 640; letter-spacing: 0.02em;
+}
+[data-theme="dark"] .plan-flag { background: var(--primary); color: #0d1220; }
+.plan-name { font-size: 21px; font-weight: 660; }
+.plan-for { margin-top: 6px; color: var(--text-sub); font-size: 14.5px; min-height: 44px; }
+.plan-price {
+  margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border-soft);
+  font-size: 16px; font-weight: 600;
+}
+.plan-price span { display: block; font-size: 13.5px; font-weight: 400; color: var(--text-faint); margin-top: 2px; }
+.plan-feats { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 13px; }
+.plan-feats li { display: flex; gap: 11px; font-size: 14.5px; align-items: flex-start; }
+.plan-feats svg { flex: none; margin-top: 3px; color: var(--teal); }
+.plan-feats b { font-weight: 620; }
+.plan-cta { margin-top: 26px; }
+.plan-cta .btn { width: 100%; }
+
+/* ── Trình thiết lập ──────────────────────────────────────────────────── */
+.wizard { margin-top: 40px; display: grid; grid-template-columns: 262px 1fr; gap: 32px; align-items: start; }
+@media (max-width: 900px) { .wizard { grid-template-columns: 1fr; gap: 20px; } }
+
+.rail { position: sticky; top: 92px; display: grid; gap: 2px; }
+@media (max-width: 900px) { .rail { position: static; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; } }
+.rail-item {
+  display: flex; gap: 13px; align-items: center; text-align: left;
+  padding: 12px 14px; border-radius: var(--r-ctl);
+  border: 1px solid transparent; background: transparent; cursor: pointer;
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.rail-item:hover:not([aria-current="step"]) { background: var(--surface-2); }
+.rail-item[aria-current="step"] { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-sm); }
+.rail-item[disabled] { cursor: not-allowed; opacity: 0.55; }
+.rail-num {
+  width: 26px; height: 26px; flex: none; border-radius: 999px;
+  display: grid; place-items: center;
+  font-size: 12.5px; font-weight: 640; font-family: var(--font-mono);
+  background: var(--surface-2); color: var(--text-faint);
+  border: 1px solid var(--border-soft);
+  transition: background 0.22s var(--ease), color 0.22s var(--ease);
+}
+.rail-item[aria-current="step"] .rail-num { background: var(--primary-dark); color: #fff; border-color: transparent; }
+[data-theme="dark"] .rail-item[aria-current="step"] .rail-num { background: var(--primary); color: #0d1220; }
+.rail-item.done .rail-num { background: var(--success-bg); color: var(--success); border-color: transparent; }
+.rail-label { font-size: 14.5px; font-weight: 540; white-space: nowrap; }
+.rail-hint { font-size: 12.5px; color: var(--text-faint); }
+@media (max-width: 900px) { .rail-hint { display: none; } .rail-label { font-size: 13.5px; } }
+
+.panel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-card); box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.panel-body { padding: 32px; }
+@media (max-width: 640px) { .panel-body { padding: 20px; } }
+.panel-foot {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 32px; border-top: 1px solid var(--border-soft); background: var(--surface-2);
+}
+@media (max-width: 640px) { .panel-foot { padding: 16px 20px; } }
+.panel-foot .grow { flex: 1; }
+.step-title { font-size: 22px; }
+.step-lede { margin-top: 8px; color: var(--text-sub); font-size: 15px; max-width: 58ch; }
+
+.step { display: none; }
+.step.on { display: block; }
+.step.on .anim { animation: rise 0.42s var(--ease) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+
+/* ── Trường nhập ──────────────────────────────────────────────────────── */
+.fields { margin-top: 26px; display: grid; gap: 20px; }
+.fields.two { grid-template-columns: 1fr 1fr; }
+@media (max-width: 700px) { .fields.two { grid-template-columns: 1fr; } }
+.field { display: grid; gap: 7px; }
+.field > label { font-size: 14px; font-weight: 560; }
+.field .req { color: var(--danger); }
+.field .help { font-size: 13px; color: var(--text-faint); }
+.field .err { font-size: 13px; color: var(--danger); display: none; }
+.field.bad .err { display: block; }
+
+input[type="text"], input[type="email"], input[type="url"], input[type="number"], select, textarea {
+  width: 100%; padding: 11px 13px;
+  font: inherit; font-size: 15px;
+  color: var(--text); background: var(--bg);
+  border: 1px solid var(--border); border-radius: var(--r-ctl);
+  transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+textarea { resize: vertical; min-height: 84px; line-height: 1.55; }
+input::placeholder, textarea::placeholder { color: var(--text-faint); opacity: 1; }
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--ring);
+}
+.field.bad input, .field.bad textarea { border-color: var(--danger); }
+select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 49%, var(--text-faint) 50%),
+                    linear-gradient(-45deg, transparent 49%, var(--text-faint) 50%);
+  background-size: 7px 7px, 7px 7px;
+  background-position: right 18px center, right 12px center;
+  background-repeat: no-repeat;
+  padding-right: 38px;
+}
+.with-suffix { display: flex; align-items: stretch; }
+.with-suffix input { border-radius: var(--r-ctl) 0 0 var(--r-ctl); position: relative; z-index: 1; }
+.with-suffix .suffix {
+  display: grid; place-items: center; padding: 0 13px;
+  border: 1px solid var(--border); border-left: 0;
+  border-radius: 0 var(--r-ctl) var(--r-ctl) 0;
+  background: var(--surface-2); color: var(--text-sub);
+  font-family: var(--font-mono); font-size: 13.5px; white-space: nowrap;
+}
+
+/* Chọn gói bằng thẻ radio */
+.picks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 700px) { .picks { grid-template-columns: 1fr; } }
+.pick { position: relative; }
+.pick input { position: absolute; opacity: 0; pointer-events: none; }
+.pick > span {
+  display: block; padding: 18px; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: var(--r-ctl);
+  background: var(--bg);
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.pick > span:hover { border-color: color-mix(in srgb, var(--primary) 50%, var(--border)); }
+.pick input:checked + span { border-color: var(--primary); background: var(--primary-bg); }
+.pick input:focus-visible + span { outline: 3px solid var(--ring); outline-offset: 2px; }
+.pick-name { display: block; font-weight: 620; font-size: 16px; }
+.pick-meta { display: block; margin-top: 6px; font-size: 13.5px; color: var(--text-sub); }
+.pick-meta b { font-family: var(--font-mono); font-weight: 600; font-size: 13px; }
+
+/* Logo xem trước */
+.logo-prev {
+  margin-top: 10px; display: flex; align-items: center; gap: 14px;
+  padding: 13px; border: 1px dashed var(--border); border-radius: var(--r-ctl);
+  background: var(--surface-2);
+}
+.logo-prev .box {
+  width: 52px; height: 52px; flex: none; border-radius: var(--r-ctl);
+  background: var(--bg); border: 1px solid var(--border-soft);
+  display: grid; place-items: center; overflow: hidden; color: var(--text-faint);
+}
+.logo-prev img { width: 100%; height: 100%; object-fit: contain; }
+.logo-prev .cap { font-size: 13px; color: var(--text-sub); }
+
+/* ── Từ khoá theo dõi ─────────────────────────────────────────────────── */
+.meter { margin-top: 26px; padding: 16px 18px; border: 1px solid var(--border); border-radius: var(--r-ctl); background: var(--surface-2); }
+.meter-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.meter-num { font-family: var(--font-mono); font-size: 20px; font-weight: 620; }
+.meter-of { font-size: 14px; color: var(--text-sub); }
+.meter-tag { margin-left: auto; font-size: 13px; color: var(--text-faint); }
+.meter-bar { margin-top: 11px; height: 7px; border-radius: 999px; background: var(--border-soft); overflow: hidden; }
+.meter-fill {
+  /* span mặc định là inline, phải đặt display:block nếu không width/height bị bỏ qua */
+  display: block;
+  height: 100%; width: 0; border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--teal));
+  transition: width 0.5s var(--ease), background 0.3s var(--ease);
+  /* luôn thấy một vạch nhỏ khi đã có từ khoá, để không trông như thanh rỗng */
+  min-width: 0;
+}
+.meter.over .meter-fill { background: var(--danger); }
+.meter.over .meter-num { color: var(--danger); }
+
+.cluster {
+  margin-top: 16px; padding: 20px;
+  border: 1px solid var(--border); border-radius: var(--r-ctl); background: var(--bg);
+}
+.cluster-top { display: flex; gap: 12px; align-items: flex-end; }
+.cluster-top .field { flex: 1; }
+.chips { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; min-height: 34px; align-items: flex-start; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 7px 5px 12px; border-radius: 999px;
+  background: var(--primary-bg); color: var(--primary-dark);
+  border: 1px solid color-mix(in srgb, var(--primary) 32%, transparent);
+  font-family: var(--font-mono); font-size: 13px;
+  animation: pop 0.28s var(--ease) both;
+}
+[data-theme="dark"] .chip { color: var(--primary-dark); }
+@keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+.chip button {
+  width: 19px; height: 19px; display: grid; place-items: center;
+  border: 0; border-radius: 999px; background: transparent; color: inherit;
+  cursor: pointer; opacity: 0.6; transition: opacity 0.15s, background 0.15s;
+}
+.chip button:hover { opacity: 1; background: color-mix(in srgb, var(--primary) 22%, transparent); }
+.chips-empty { font-size: 13.5px; color: var(--text-faint); font-style: italic; padding: 6px 0; }
+
+.note {
+  display: flex; gap: 11px; padding: 14px 16px;
+  border-radius: var(--r-ctl); font-size: 13.5px; line-height: 1.55;
+}
+.note svg { flex: none; margin-top: 2px; }
+.note.info { background: var(--primary-bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent); }
+.note.warn { background: var(--warning-bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent); }
+.note.warn svg { color: var(--warning); }
+.note.info svg { color: var(--primary-dark); }
+.note.bad { background: var(--danger-bg); color: var(--text); border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent); }
+.note.bad svg { color: var(--danger); }
+.note code { font-family: var(--font-mono); font-size: 12.5px; background: color-mix(in srgb, var(--text) 8%, transparent); padding: 1px 5px; border-radius: 6px; }
+
+/* ── Xem lại ──────────────────────────────────────────────────────────── */
+.recap { margin-top: 24px; display: grid; gap: 12px; }
+.recap-card { border: 1px solid var(--border); border-radius: var(--r-ctl); overflow: hidden; }
+.recap-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border-soft);
+  font-size: 14px; font-weight: 600;
+}
+.recap-head svg { color: var(--text-faint); }
+.recap-head .edit { margin-left: auto; }
+.recap-rows { padding: 6px 16px 14px; }
+.recap-row { display: flex; gap: 14px; padding: 8px 0; font-size: 14.5px; align-items: baseline; }
+.recap-row + .recap-row { border-top: 1px solid var(--border-soft); }
+.recap-row dt { width: 190px; flex: none; color: var(--text-sub); font-size: 14px; }
+.recap-row dd { margin: 0; flex: 1; word-break: break-word; }
+.recap-row dd.mono { font-family: var(--font-mono); font-size: 13.5px; }
+.recap-row dd.none { color: var(--text-faint); font-style: italic; }
+@media (max-width: 560px) { .recap-row { display: block; } .recap-row dt { width: auto; margin-bottom: 2px; } }
+
+details.payload { margin-top: 18px; border: 1px solid var(--border); border-radius: var(--r-ctl); }
+details.payload summary {
+  padding: 13px 16px; cursor: pointer; font-size: 14px; font-weight: 560;
+  display: flex; align-items: center; gap: 9px; list-style: none;
+}
+details.payload summary::-webkit-details-marker { display: none; }
+details.payload summary .tw { transition: transform 0.22s var(--ease); color: var(--text-faint); }
+details.payload[open] summary .tw { transform: rotate(90deg); }
+details.payload pre {
+  margin: 0; padding: 0 16px 16px; overflow-x: auto;
+  font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65; color: var(--text-sub);
+}
+
+/* ── Hoàn tất ─────────────────────────────────────────────────────────── */
+.done-mark {
+  width: 60px; height: 60px; border-radius: 999px; display: grid; place-items: center;
+  background: var(--success-bg); color: var(--success);
+  animation: pop 0.45s var(--ease) both;
+}
+.secret {
+  margin-top: 18px; padding: 18px; border-radius: var(--r-ctl);
+  border: 1px solid color-mix(in srgb, var(--warning) 34%, transparent); background: var(--warning-bg);
+}
+.secret-label { font-size: 13px; font-weight: 600; }
+.secret-val {
+  margin-top: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.secret-val code {
+  flex: 1; min-width: 220px; padding: 11px 13px; border-radius: var(--r-ctl);
+  background: var(--bg); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.02em; word-break: break-all;
+}
+.secret-warn { margin-top: 10px; font-size: 13px; color: var(--text-sub); }
+
+/* ── Dòng thời gian dữ liệu ───────────────────────────────────────────── */
+.tl { margin-top: 40px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+@media (max-width: 860px) { .tl { grid-template-columns: 1fr; } }
+.tl-step { position: relative; padding: 0 24px 0 0; }
+.tl-step::before {
+  content: ""; position: absolute; left: 0; top: 7px; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 18%, transparent));
+}
+.tl-step:last-child::before { background: color-mix(in srgb, var(--primary) 18%, transparent); }
+.tl-dot {
+  display: block;
+  position: relative; width: 16px; height: 16px; border-radius: 999px;
+  background: var(--bg); border: 2px solid var(--primary); z-index: 1;
+}
+.tl-when { margin-top: 18px; font-size: 14px; font-weight: 620; }
+.tl-what { margin-top: 5px; font-size: 14px; color: var(--text-sub); max-width: 26ch; }
+@media (max-width: 860px) {
+  .tl-step { padding: 0 0 26px 26px; }
+  .tl-step::before { left: 7px; top: 8px; right: auto; bottom: 0; width: 2px; height: auto; }
+  .tl-step:last-child::before { display: none; }
+  .tl-dot { position: absolute; left: 0; top: 5px; }
+  .tl-when { margin-top: 0; }
+}
+
+/* ── Chân trang ───────────────────────────────────────────────────────── */
+footer.foot { padding: 40px 0 56px; border-top: 1px solid var(--border-soft); color: var(--text-faint); font-size: 13.5px; }
+.foot-in { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.foot-in .grow { flex: 1; }
+
+/* ── Hiện dần khi cuộn tới ────────────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.65s var(--ease), transform 0.65s var(--ease); }
+.reveal.seen { opacity: 1; transform: none; }
+.reveal.d1 { transition-delay: 0.07s; }
+.reveal.d2 { transition-delay: 0.14s; }
+.reveal.d3 { transition-delay: 0.21s; }
+
+/* Đang xử lý */
+.spin { animation: spin 0.85s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Tôn trọng cài đặt giảm chuyển động của người dùng. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
+/* Bảng tự kiểm tra (chỉ mở khi thêm ?selftest=1 vào địa chỉ) */
+#selftest {
+  display: none; position: fixed; inset: auto 16px 16px auto; z-index: 90;
+  max-width: 380px; max-height: 55vh; overflow: auto;
+  padding: 14px 16px; border-radius: var(--r-card);
+  background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+}
+#selftest.on { display: block; }
+#selftest .ok { color: var(--success); }
+#selftest .no { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<!-- Bộ biểu tượng: vendor từ Tabler Icons (giấy phép MIT), gắn sẵn để trang chạy được offline. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-check"><path d="M5 12l5 5L20 7"/></g>
+    <g id="i-right"><path d="M9 6l6 6l-6 6"/></g>
+    <g id="i-left"><path d="M15 6l-6 6l6 6"/></g>
+    <g id="i-plus"><path d="M12 5v14M5 12h14"/></g>
+    <g id="i-x"><path d="M18 6L6 18M6 6l12 12"/></g>
+    <g id="i-warn"><path d="M12 9v4M12 17h.01"/><path d="M10.24 3.957l-8.422 14.06a1.9 1.9 0 0 0 1.636 2.983h16.292a1.9 1.9 0 0 0 1.636 -2.983l-8.422 -14.06a1.9 1.9 0 0 0 -3.271 0z"/></g>
+    <g id="i-info"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></g>
+    <g id="i-copy"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></g>
+    <g id="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M3 12h2M19 12h2M5.6 18.4L7 17M17 7l1.4-1.4"/></g>
+    <g id="i-moon"><path d="M12 3h.393a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"/></g>
+    <g id="i-building"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></g>
+    <g id="i-box"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></g>
+    <g id="i-tag"><path d="M7.5 7.5h.01"/><path d="M3 6a3 3 0 0 1 3-3h5.172a3 3 0 0 1 2.121.879l7.071 7.07a1.5 1.5 0 0 1 0 2.122l-6.343 6.343a1.5 1.5 0 0 1-2.121 0l-7.071-7.07A3 3 0 0 1 3 11.172z"/></g>
+    <g id="i-user"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></g>
+    <g id="i-clip"><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M9 14l2 2l4-4"/></g>
+    <g id="i-globe"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8"/><path d="M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18"/></g>
+    <g id="i-load"><path d="M12 3a9 9 0 1 0 9 9"/></g>
+  </defs>
+</svg>
+
+<!-- ════════════════════════ Thanh trên ════════════════════════ -->
+<header class="topbar">
+  <div class="shell topbar-in">
+    <div class="brand"><span class="brand-mark">TSL</span> <span>Bảng điều khiển vận hành</span></div>
+    <div class="topbar-spacer"></div>
+    <nav class="topnav" aria-label="Điều hướng chính">
+      <a href="#goi">Hai gói dịch vụ</a>
+      <a href="#thietlap">Thiết lập</a>
+      <a href="#dulieu">Dữ liệu về khi nào</a>
+    </nav>
+    <button class="icon-btn" id="theme-btn" type="button" aria-label="Đổi màu sáng hoặc tối">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-moon" id="theme-icon"/></svg>
+    </button>
+    <a class="btn btn-primary btn-sm" href="#thietlap" style="text-decoration:none">Bắt đầu</a>
+  </div>
+</header>
+
+<!-- ════════════════════════ Mở đầu ════════════════════════ -->
+<section class="hero">
+  <div class="shell hero-grid">
+    <div>
+      <h1>Trang đăng ký Dịch vụ</h1>
+      <p class="hero-sub">
+        Nhập thông tin, chọn gói, thêm từ khoá. Hệ thống bắt đầu thu dữ liệu ngay khi bạn xác nhận.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#thietlap" style="text-decoration:none">Bắt đầu thiết lập</a>
+        <a class="btn btn-ghost" href="#goi" style="text-decoration:none">Xem hai gói</a>
+      </div>
+    </div>
+
+    <!-- Thẻ này chạy đúng hàm chuẩn hoá từ khoá của hệ thống, không phải ảnh minh hoạ. -->
+    <div class="probe">
+      <p class="probe-title">Thử một từ khoá</p>
+      <p class="probe-note">Gõ tên thương hiệu hoặc cụm từ để xem hệ thống lưu nó thành dạng nào.</p>
+      <div class="field" style="margin-top:16px">
+        <label for="probe-in" class="sr">Từ khoá thử</label>
+        <input id="probe-in" type="text" value="  Bách Hoá XANH  " autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="probe-out">
+        <div class="probe-row">
+          <span class="probe-key">Bạn gõ</span>
+          <span class="probe-val" id="probe-raw"></span>
+        </div>
+        <div class="probe-row">
+          <span class="probe-key">Hệ thống lưu</span>
+          <span class="probe-val hit" id="probe-can"></span>
+        </div>
+        <div class="probe-row">
+          <span class="probe-key">Số ký tự</span>
+          <span class="probe-val miss" id="probe-len"></span>
+        </div>
+      </div>
+      <div class="note info" style="margin-top:16px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg>
+        <span>Không phân biệt chữ hoa chữ thường, nhưng <b>có phân biệt dấu</b>: <code>bách hoá xanh</code> khác <code>bach hoa xanh</code>. Nếu khách viết cả hai kiểu, hãy thêm cả hai.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Hai gói ════════════════════════ -->
+<section class="band alt" id="goi">
+  <div class="shell">
+    <div class="band-head reveal">
+      <h2>Hai gói dịch vụ</h2>
+      <p>Gói quyết định lượng dữ liệu lấy về mỗi ngày và số từ khoá khách được theo dõi. Có thể nâng cấp sau, lịch sử thay đổi được ghi lại.</p>
+    </div>
+
+    <div class="plans">
+      <article class="plan featured reveal d1">
+        <span class="plan-flag">Phổ biến</span>
+        <h3 class="plan-name">Pro</h3>
+        <p class="plan-for">Cho thương hiệu cần theo dõi hằng ngày và nhận cảnh báo khi có sự cố.</p>
+        <p class="plan-price">Báo giá theo hợp đồng<span>Ký theo năm, xuất hoá đơn theo tháng</span></p>
+        <ul class="plan-feats">
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span><b>5.000</b> lượt lấy dữ liệu mỗi ngày</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span><b>150.000</b> bài viết được phân tích mỗi ngày</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Theo dõi tối đa <b>1.000</b> từ khoá</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Tên miền riêng cho khách</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Cảnh báo khủng hoảng và xu hướng</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Lưu dữ liệu <b>30 ngày</b></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Hỗ trợ qua email, điện thoại, và người phụ trách riêng</span></li>
+        </ul>
+        <div class="plan-cta"><button class="btn btn-primary" type="button" data-choose="pro">Chọn gói Pro</button></div>
+      </article>
+
+      <article class="plan reveal d2">
+        <h3 class="plan-name">Enterprise</h3>
+        <p class="plan-for">Cho tập đoàn nhiều thương hiệu, nhiều đội, cần cấu hình và cam kết riêng.</p>
+        <p class="plan-price">Báo giá theo hợp đồng<span>Các con số dưới đây chốt khi ký</span></p>
+        <ul class="plan-feats">
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Lượt lấy dữ liệu mỗi ngày: <b>theo thoả thuận</b></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Số bài viết phân tích mỗi ngày: <b>theo thoả thuận</b></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Số từ khoá theo dõi: <b>theo thoả thuận</b></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Tên miền riêng, giao diện theo nhận diện của khách</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Cảnh báo khủng hoảng, xu hướng, và cảnh báo đặt riêng</span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Thời gian lưu dữ liệu: <b>theo thoả thuận</b></span></li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg><span>Nhiều nhóm người dùng, phân quyền chi tiết, kênh hỗ trợ riêng</span></li>
+        </ul>
+        <div class="plan-cta"><button class="btn btn-ghost" type="button" data-choose="enterprise">Chọn gói Enterprise</button></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Trình thiết lập ════════════════════════ -->
+<section class="band" id="thietlap">
+  <div class="shell">
+    <div class="band-head reveal">
+      <h2>Thiết lập khách hàng mới</h2>
+      <p>Năm bước. Có thể quay lại sửa bất cứ lúc nào trước khi bấm tạo.</p>
+    </div>
+
+    <div class="wizard">
+      <!-- Cột bước -->
+      <nav class="rail" id="rail" aria-label="Các bước thiết lập">
+        <button class="rail-item" type="button" data-go="0" aria-current="step">
+          <span class="rail-num">1</span>
+          <span><span class="rail-label">Thông tin khách</span><br /><span class="rail-hint">Tên, tên miền, logo</span></span>
+        </button>
+        <button class="rail-item" type="button" data-go="1">
+          <span class="rail-num">2</span>
+          <span><span class="rail-label">Gói dịch vụ</span><br /><span class="rail-hint">Hạn mức mỗi ngày</span></span>
+        </button>
+        <button class="rail-item" type="button" data-go="2">
+          <span class="rail-num">3</span>
+          <span><span class="rail-label">Từ khoá theo dõi</span><br /><span class="rail-hint">Nhóm và từ khoá</span></span>
+        </button>
+        <button class="rail-item" type="button" data-go="3">
+          <span class="rail-num">4</span>
+          <span><span class="rail-label">Người dùng đầu tiên</span><br /><span class="rail-hint">Tài khoản đăng nhập</span></span>
+        </button>
+        <button class="rail-item" type="button" data-go="4">
+          <span class="rail-num">5</span>
+          <span><span class="rail-label">Xem lại và tạo</span><br /><span class="rail-hint">Kiểm tra lần cuối</span></span>
+        </button>
+      </nav>
+
+      <!-- Khung nội dung -->
+      <form class="panel" id="wiz" novalidate>
+        <div class="panel-body">
+
+          <!-- ─────────── Bước 1 ─────────── -->
+          <section class="step on" data-step="0" aria-labelledby="t0">
+            <div class="anim">
+              <h3 class="step-title" id="t0">Thông tin khách hàng</h3>
+              <p class="step-lede">Tên khách và tên miền riêng là hai thứ khách sẽ thấy mỗi ngày. Logo có thể bổ sung sau.</p>
+            </div>
+
+            <div class="fields anim">
+              <div class="field" data-field="name">
+                <label for="f-name">Tên khách hàng <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-name" name="name" type="text" maxlength="200" placeholder="Ví dụ: Công ty Sữa Trường An" autocomplete="off" />
+                <p class="help">Tên này hiện trên báo cáo và trong email cảnh báo gửi cho khách.</p>
+                <p class="err" id="e-name"></p>
+              </div>
+
+              <div class="fields two" style="margin-top:0">
+                <div class="field" data-field="subdomain">
+                  <label for="f-sub">Tên miền riêng <span class="req" aria-hidden="true">*</span></label>
+                  <div class="with-suffix">
+                    <input id="f-sub" name="subdomain" type="text" maxlength="63" placeholder="truong-an" autocomplete="off" spellcheck="false" />
+                    <span class="suffix">.tsl.vn</span>
+                  </div>
+                  <p class="help">Chỉ chữ thường không dấu, số, và dấu gạch ngang. Không đặt gạch ngang ở đầu hoặc cuối.</p>
+                  <p class="err" id="e-subdomain"></p>
+                </div>
+
+                <div class="field" data-field="locale">
+                  <label for="f-locale">Ngôn ngữ mặc định</label>
+                  <select id="f-locale" name="default_locale">
+                    <option value="vi" selected>Tiếng Việt</option>
+                    <option value="en">Tiếng Anh</option>
+                  </select>
+                  <p class="help">Ngôn ngữ khách thấy khi mở trang lần đầu. Người dùng đổi được sau.</p>
+                </div>
+              </div>
+
+              <div class="field" data-field="logo">
+                <label for="f-logo">Đường dẫn logo</label>
+                <input id="f-logo" name="branding_logo_url" type="url" maxlength="2048" placeholder="https://khachhang.vn/logo.svg" autocomplete="off" spellcheck="false" />
+                <p class="help">Phải bắt đầu bằng <code style="font-family:var(--font-mono);font-size:12.5px">https://</code> và không chứa tên đăng nhập hay mật khẩu trong đường dẫn.</p>
+                <p class="err" id="e-logo"></p>
+                <div class="logo-prev" id="logo-prev">
+                  <span class="box" id="logo-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-building"/></svg>
+                  </span>
+                  <span class="cap" id="logo-cap">Chưa có logo. Trang khách sẽ dùng chữ đầu của tên khách.</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─────────── Bước 2 ─────────── -->
+          <section class="step" data-step="1" aria-labelledby="t1">
+            <div class="anim">
+              <h3 class="step-title" id="t1">Gói dịch vụ</h3>
+              <p class="step-lede">Gói quyết định số lượt lấy dữ liệu mỗi ngày và số từ khoá tối đa. Đổi gói sau này là một bản ghi mới, không ghi đè bản cũ.</p>
+            </div>
+
+            <div class="fields anim">
+              <div class="field" data-field="plan">
+                <label id="lb-plan">Chọn gói</label>
+                <div class="picks" role="radiogroup" aria-labelledby="lb-plan">
+                  <label class="pick">
+                    <input type="radio" name="packageKey" value="pro" checked />
+                    <span>
+                      <span class="pick-name">Pro</span>
+                      <span class="pick-meta"><b>5.000</b> lượt mỗi ngày<br /><b>1.000</b> từ khoá</span>
+                    </span>
+                  </label>
+                  <label class="pick">
+                    <input type="radio" name="packageKey" value="enterprise" />
+                    <span>
+                      <span class="pick-name">Enterprise</span>
+                      <span class="pick-meta">Hạn mức theo thoả thuận<br />Nhập tay ở dưới</span>
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="fields two" style="margin-top:0">
+                <div class="field" data-field="override">
+                  <label for="f-override">Hạn mức riêng mỗi ngày</label>
+                  <input id="f-override" name="collectionRunLimitOverride" type="number" min="0" max="1000000" placeholder="Để trống nếu dùng đúng hạn mức của gói" />
+                  <p class="help">Chỉ điền khi hợp đồng khác hạn mức chuẩn. Số 0 nghĩa là tạm dừng lấy dữ liệu.</p>
+                  <p class="err" id="e-override"></p>
+                </div>
+                <div class="field" data-field="cap">
+                  <label for="f-cap">Số từ khoá tối đa</label>
+                  <input id="f-cap" name="maxKeywords" type="number" min="0" max="1000" value="1000" />
+                  <p class="help">Bước 3 sẽ chặn nếu vượt con số này.</p>
+                  <p class="err" id="e-cap"></p>
+                </div>
+              </div>
+
+              <div class="field" data-field="reason">
+                <label for="f-reason">Lý do ghi nhận</label>
+                <textarea id="f-reason" name="reason" maxlength="500" placeholder="Ví dụ: Hợp đồng HD-2026-0148, ký ngày 02/08/2026, gói Pro một năm."></textarea>
+                <p class="help">Không bắt buộc. Câu này được lưu cùng bản ghi gói, để sau này biết ai đổi gì và vì sao. Để trống thì hệ thống tự ghi một câu mặc định.</p>
+                <p class="err" id="e-reason"></p>
+              </div>
+
+              <div class="note warn" id="pkg-warn" hidden>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>
+                <span>Gói <code>enterprise</code> cần được tạo trong danh mục gói trước khi gán. Nếu chưa có, hãy nhờ đội kỹ thuật thêm bản ghi gói rồi quay lại bước này.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─────────── Bước 3 ─────────── -->
+          <section class="step" data-step="2" aria-labelledby="t2">
+            <div class="anim">
+              <h3 class="step-title" id="t2">Từ khoá cần theo dõi</h3>
+              <p class="step-lede">Chia theo nhóm để đọc báo cáo dễ hơn: tên thương hiệu, dòng sản phẩm, chiến dịch đang chạy.</p>
+            </div>
+
+            <div class="meter anim" id="meter">
+              <div class="meter-top">
+                <span class="meter-num" id="meter-num">0</span>
+                <span class="meter-of">trong <span id="meter-lim">1.000</span> từ khoá</span>
+                <span class="meter-tag" id="meter-tag">Từ trùng nhau chỉ tính một lần</span>
+              </div>
+              <div class="meter-bar"><span class="meter-fill" id="meter-fill"></span></div>
+            </div>
+
+            <div id="clusters" class="anim"></div>
+
+            <div style="margin-top:16px" class="anim">
+              <button class="btn btn-ghost btn-sm" type="button" id="add-cluster">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-plus"/></svg>
+                Thêm nhóm từ khoá
+              </button>
+            </div>
+
+            <div class="note info anim" style="margin-top:22px">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg>
+              <span>Gõ từ khoá rồi nhấn Enter hoặc dấu phẩy. Hệ thống tự bỏ khoảng trắng thừa, chuyển về chữ thường, và bỏ từ lặp. Dấu tiếng Việt được giữ nguyên.</span>
+            </div>
+
+            <div class="note bad anim" id="cap-err" style="margin-top:14px" hidden>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>
+              <span id="cap-err-txt"></span>
+            </div>
+          </section>
+
+          <!-- ─────────── Bước 4 ─────────── -->
+          <section class="step" data-step="3" aria-labelledby="t3">
+            <div class="anim">
+              <h3 class="step-title" id="t3">Người dùng đầu tiên</h3>
+              <p class="step-lede">Tài khoản này là người của khách, dùng để đăng nhập vào trang riêng của họ. Bạn có thể thêm người khác sau.</p>
+            </div>
+
+            <div class="fields anim">
+              <div class="fields two" style="margin-top:0">
+                <div class="field" data-field="email">
+                  <label for="f-email">Email đăng nhập <span class="req" aria-hidden="true">*</span></label>
+                  <input id="f-email" name="email" type="email" placeholder="ten@khachhang.vn" autocomplete="off" spellcheck="false" />
+                  <p class="help">Mỗi email chỉ dùng cho một tài khoản trên toàn hệ thống.</p>
+                  <p class="err" id="e-email"></p>
+                </div>
+                <div class="field" data-field="display_name">
+                  <label for="f-display">Tên người dùng</label>
+                  <input id="f-display" name="display_name" type="text" maxlength="120" placeholder="Ví dụ: Lê Thuỳ Dương" autocomplete="off" />
+                  <p class="help">Không bắt buộc. Hiện trong lịch sử thao tác.</p>
+                </div>
+              </div>
+
+              <div class="fields two" style="margin-top:0">
+                <div class="field" data-field="group">
+                  <label for="f-group">Nhóm quyền</label>
+                  <select id="f-group" name="group">
+                    <option value="tenant_owner" selected>Quản trị của khách (toàn quyền trong phạm vi khách)</option>
+                    <option value="tenant_analyst">Người phân tích (xem và gắn nhãn)</option>
+                    <option value="tenant_viewer">Chỉ xem</option>
+                  </select>
+                  <p class="help">Người đầu tiên nên là quản trị, để họ tự thêm đồng nghiệp.</p>
+                </div>
+                <div class="field" data-field="am">
+                  <label for="f-am">Người phụ trách khách này</label>
+                  <select id="f-am" name="account_manager">
+                    <option value="">Chưa gán</option>
+                    <option value="am-1">Nguyễn Hải Đăng</option>
+                    <option value="am-2">Phạm Khánh Vy</option>
+                    <option value="am-3">Trần Quốc Bảo</option>
+                  </select>
+                  <p class="help">Người phụ trách chỉ thấy các khách được gán cho mình.</p>
+                </div>
+              </div>
+
+              <div class="note warn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>
+                <span>Bạn không đặt mật khẩu ở đây. Hệ thống tự sinh một mật khẩu tạm và <b>chỉ hiện đúng một lần</b> ở bước cuối. Hãy chuẩn bị sẵn cách gửi cho khách trước khi bấm tạo.</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─────────── Bước 5 ─────────── -->
+          <section class="step" data-step="4" aria-labelledby="t4">
+            <div id="recap-wrap">
+              <div class="anim">
+                <h3 class="step-title" id="t4">Xem lại và tạo</h3>
+                <p class="step-lede">Đọc lại một lượt. Bấm tạo là hệ thống dựng khách hàng, gán gói, lưu từ khoá, và mở tài khoản đăng nhập.</p>
+              </div>
+              <div class="recap anim" id="recap"></div>
+
+              <details class="payload anim">
+                <summary>
+                  <svg class="tw" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-right"/></svg>
+                  Dữ liệu sẽ gửi lên hệ thống
+                </summary>
+                <pre id="payload"></pre>
+              </details>
+
+              <div class="note info anim" style="margin-top:18px">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg>
+                <span><b>Về dữ liệu:</b> hệ thống tích luỹ từ ngày mở khách hàng. Ngay sau khi tạo, khách thấy một ảnh chụp nhanh các bài đang nổi. Cửa sổ 7 ngày đầy sau một tuần, cửa sổ 30 ngày đầy sau một tháng. Hãy nói rõ điều này với khách để tránh kỳ vọng sai.</span>
+              </div>
+            </div>
+
+            <!-- Trạng thái hoàn tất -->
+            <div id="finished" hidden>
+              <div class="done-mark">
+                <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg>
+              </div>
+              <h3 class="step-title" style="margin-top:20px">Đã tạo xong khách hàng</h3>
+              <p class="step-lede" id="done-lede"></p>
+
+              <div class="recap" style="margin-top:22px">
+                <div class="recap-card">
+                  <div class="recap-head">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-globe"/></svg>
+                    Trang riêng của khách
+                  </div>
+                  <div class="recap-rows"><dl id="done-rows" style="margin:0"></dl></div>
+                </div>
+              </div>
+
+              <div class="secret">
+                <p class="secret-label">Mật khẩu tạm của tài khoản đầu tiên</p>
+                <div class="secret-val">
+                  <code id="temp-pass"></code>
+                  <button class="btn btn-ghost btn-sm" type="button" id="copy-pass">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>
+                    Sao chép
+                  </button>
+                </div>
+                <p class="secret-warn">Chỉ hiện một lần. Rời trang này là không xem lại được. Nếu mất, hãy đặt lại mật khẩu cho tài khoản đó.</p>
+              </div>
+
+              <div style="margin-top:26px; display:flex; gap:12px; flex-wrap:wrap">
+                <button class="btn btn-primary" type="button" id="new-again">Tạo khách hàng khác</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Chân khung: điều hướng bước -->
+        <div class="panel-foot" id="foot">
+          <button class="btn btn-quiet" type="button" id="btn-back" hidden>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-left"/></svg>
+            Quay lại
+          </button>
+          <span class="grow"></span>
+          <span style="font-size:13px;color:var(--text-faint)" id="step-count"></span>
+          <button class="btn btn-primary" type="button" id="btn-next">
+            Tiếp tục
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-right"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════ Dữ liệu về khi nào ════════════════════════ -->
+<section class="band alt" id="dulieu">
+  <div class="shell">
+    <div class="band-head reveal">
+      <h2>Dữ liệu đầy dần theo thời gian</h2>
+      <p>Hệ thống không có dữ liệu quá khứ. Hệ thống sẽ thu thập các bài viết từ ngày cài đặt thành công Tenant, ngoài ra nếu bài viết quá ít sẽ không đủ dữ liệu để tạo dữ liệu Trending.</p>
+    </div>
+
+    <div class="tl">
+      <div class="tl-step reveal"><span class="tl-dot"></span><p class="tl-when">Ngay khi tạo</p><p class="tl-what">Một ảnh chụp nhanh các bài đang nổi theo từ khoá đã nhập.</p></div>
+      <div class="tl-step reveal d1"><span class="tl-dot"></span><p class="tl-when">Sau 24 giờ</p><p class="tl-what">Bản tin hằng ngày và cảnh báo khủng hoảng bắt đầu chạy.</p></div>
+      <div class="tl-step reveal d2"><span class="tl-dot"></span><p class="tl-when">Sau một tuần</p><p class="tl-what">Báo cáo 7 ngày đủ dữ liệu, so sánh tuần này với tuần trước dùng được.</p></div>
+      <div class="tl-step reveal d3"><span class="tl-dot"></span><p class="tl-when">Sau một tháng</p><p class="tl-what">Báo cáo 30 ngày đủ dữ liệu, xu hướng dài hạn đáng tin.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="shell foot-in">
+    <span class="grow">TSL, hệ thống theo dõi thương hiệu. Trang này dành cho nhân viên vận hành.</span>
+    <span>Cần hỗ trợ, liên hệ đội kỹ thuật nội bộ.</span>
+  </div>
+</footer>
+
+<div id="selftest" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════════════════
+   1. Chuẩn hoá từ khoá.
+      Bản sao logic của services/api/src/common/canonicalize-keyword.ts
+      (NFC + bỏ khoảng trắng hai đầu + chữ thường, GIỮ dấu tiếng Việt).
+      Trang này và máy chủ phải cho ra cùng một kết quả, nếu lệch là mất khớp.
+   ═══════════════════════════════════════════════════════════════════════ */
+function canonicalizeKeyword(raw) {
+  return String(raw).normalize("NFC").trim().toLowerCase();
+}
+function canonicalizeTerms(list) {
+  const seen = new Set();
+  const out = [];
+  for (const term of list) {
+    const c = canonicalizeKeyword(term);
+    if (c === "" || seen.has(c)) continue;
+    seen.add(c);
+    out.push(c);
+  }
+  return out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   2. Kiểm tra hợp lệ. Cùng luật với máy chủ để người dùng thấy lỗi ngay,
+      máy chủ vẫn là nơi quyết định cuối cùng.
+   ═══════════════════════════════════════════════════════════════════════ */
+const SUBDOMAIN_RE = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/;
+
+function slugify(name) {
+  return canonicalizeKeyword(name)
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")   // bỏ dấu để làm tên miền
+    .replace(/[đĐ]/g, "d")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 63)
+    .replace(/-+$/g, "");
+}
+
+function checkSubdomain(v) {
+  if (!v) return "Hãy nhập tên miền riêng cho khách.";
+  if (v.length > 63) return "Tối đa 63 ký tự.";
+  if (v !== v.toLowerCase()) return "Chỉ dùng chữ thường.";
+  if (!SUBDOMAIN_RE.test(v)) {
+    return "Chỉ chữ thường không dấu, số, và dấu gạch ngang ở giữa. Không dùng dấu chấm hay gạch dưới.";
+  }
+  return null;
+}
+
+function checkLogoUrl(v) {
+  if (!v) return null;                                   // không bắt buộc
+  if (v.length > 2048) return "Đường dẫn quá dài.";
+  let u;
+  try { u = new URL(v); } catch (e) { return "Đường dẫn không đúng dạng."; }
+  if (u.protocol !== "https:") return "Phải là đường dẫn https.";
+  if (u.username || u.password) return "Đường dẫn không được chứa tên đăng nhập hay mật khẩu.";
+  return null;
+}
+
+function checkEmail(v) {
+  if (!v) return "Hãy nhập email đăng nhập.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return "Email không đúng dạng.";
+  return null;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   3. Trạng thái
+   ═══════════════════════════════════════════════════════════════════════ */
+// Máy chủ đòi reason không rỗng, còn người nhập thì không bắt buộc điền.
+// Bỏ trống ở bước 2 thì câu này được ghi vào bản ghi gói.
+const DEFAULT_REASON = "Khởi tạo tenant mới từ trang đăng ký dịch vụ.";
+
+const PACKAGES = {
+  pro:        { label: "Pro",        runs: 5000, maxKeywords: 1000 },
+  enterprise: { label: "Enterprise", runs: null, maxKeywords: 1000 }
+};
+
+let clusters = [
+  { id: 1, name: "Tên thương hiệu", terms: [], draft: "" },
+  { id: 2, name: "Dòng sản phẩm",   terms: [], draft: "" }
+];
+let nextClusterId = 3;
+let step = 0;
+const LAST_STEP = 4;
+
+const $  = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const nf = new Intl.NumberFormat("vi-VN");
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* ═══════════════════════════════════════════════════════════════════════
+   4. Màu sáng hoặc tối
+   ═══════════════════════════════════════════════════════════════════════ */
+function paintThemeIcon() {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  $("#theme-icon").setAttribute("href", dark ? "#i-sun" : "#i-moon");
+}
+paintThemeIcon();
+$("#theme-btn").addEventListener("click", () => {
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  const next = dark ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("tsl-theme", next); } catch (e) {}
+  paintThemeIcon();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   5. Thẻ thử từ khoá ở đầu trang
+   ═══════════════════════════════════════════════════════════════════════ */
+const probeIn = $("#probe-in");
+function paintProbe() {
+  const raw = probeIn.value;
+  const can = canonicalizeKeyword(raw);
+  $("#probe-raw").textContent = raw === "" ? "(trống)" : JSON.stringify(raw);
+  $("#probe-can").textContent = can === "" ? "(bỏ qua, không có nội dung)" : can;
+  $("#probe-can").className = "probe-val " + (can === "" ? "miss" : "hit");
+  $("#probe-len").textContent = raw.length + " ký tự thành " + can.length + " ký tự";
+}
+probeIn.addEventListener("input", paintProbe);
+paintProbe();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   6. Bước 1: gợi ý tên miền và xem trước logo
+   ═══════════════════════════════════════════════════════════════════════ */
+const fName = $("#f-name");
+const fSub  = $("#f-sub");
+const fLogo = $("#f-logo");
+let subTouched = false;
+
+fSub.addEventListener("input", () => { subTouched = true; clearErr("subdomain"); });
+fName.addEventListener("input", () => {
+  clearErr("name");
+  if (!subTouched) fSub.value = slugify(fName.value);
+  paintLogoCap();
+});
+
+function paintLogoCap() {
+  const v = fLogo.value.trim();
+  const box = $("#logo-box");
+  const cap = $("#logo-cap");
+  const bad = checkLogoUrl(v);
+  if (!v) {
+    const initial = (fName.value.trim()[0] || "").toUpperCase();
+    box.innerHTML = initial
+      ? '<span style="font-weight:700;font-size:20px;color:var(--primary-dark)">' + esc(initial) + "</span>"
+      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-building"/></svg>';
+    cap.textContent = "Chưa có logo. Trang khách sẽ dùng chữ đầu của tên khách.";
+    return;
+  }
+  if (bad) {
+    box.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>';
+    cap.textContent = bad;
+    return;
+  }
+  // Đây là ảnh thật do nhân viên dán vào, không phải ảnh mẫu.
+  box.innerHTML = "";
+  const img = new Image();
+  img.alt = "Logo của " + (fName.value.trim() || "khách hàng");
+  img.onload = () => { cap.textContent = "Tải được logo. Đây là hình khách sẽ thấy."; };
+  img.onerror = () => {
+    box.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-warn"/></svg>';
+    cap.textContent = "Không tải được ảnh từ đường dẫn này. Kiểm tra lại hoặc để trống.";
+  };
+  img.src = v;
+  box.appendChild(img);
+  cap.textContent = "Đang tải logo...";
+}
+fLogo.addEventListener("input", () => { clearErr("logo"); paintLogoCap(); });
+paintLogoCap();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   7. Bước 2: gói dịch vụ
+   ═══════════════════════════════════════════════════════════════════════ */
+const fCap      = $("#f-cap");
+const fOverride = $("#f-override");
+const fReason   = $("#f-reason");
+
+function currentPackageKey() {
+  const el = $('input[name="packageKey"]:checked');
+  return el ? el.value : "pro";
+}
+function paintPackage() {
+  const key = currentPackageKey();
+  const pkg = PACKAGES[key];
+  fOverride.placeholder = pkg.runs === null
+    ? "Nhập hạn mức đã thoả thuận"
+    : "Để trống nếu dùng " + nf.format(pkg.runs) + " lượt mỗi ngày";
+  $("#pkg-warn").hidden = key !== "enterprise";
+  paintMeter();
+  clearErr("reason");
+}
+$$('input[name="packageKey"]').forEach((r) => r.addEventListener("change", paintPackage));
+fCap.addEventListener("input", () => { clearErr("cap"); paintMeter(); });
+fOverride.addEventListener("input", () => clearErr("override"));
+fReason.addEventListener("input", () => clearErr("reason"));
+paintPackage();
+
+function keywordLimit() {
+  const n = parseInt(fCap.value, 10);
+  return Number.isFinite(n) && n >= 0 ? n : PACKAGES[currentPackageKey()].maxKeywords;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   8. Bước 3: nhóm từ khoá
+      Số từ khoá đã dùng = số từ KHÁC NHAU trên toàn bộ các nhóm, đúng cách
+      máy chủ đếm (hợp các tập, không cộng dồn).
+   ═══════════════════════════════════════════════════════════════════════ */
+function usedTerms() {
+  const union = new Set();
+  for (const c of clusters) for (const t of c.terms) union.add(t);
+  return union;
+}
+
+function paintMeter() {
+  const used  = usedTerms().size;
+  const limit = keywordLimit();
+  const over  = used > limit;
+  $("#meter-num").textContent = nf.format(used);
+  $("#meter-lim").textContent = nf.format(limit);
+  const pct = limit > 0 ? Math.min(100, (used / limit) * 100) : (used > 0 ? 100 : 0);
+  const fill = $("#meter-fill");
+  fill.style.width = pct + "%";
+  // Ở mức rất thấp, phần trăm nhỏ hơn một pixel nên thanh trông như rỗng.
+  fill.style.minWidth = used > 0 ? "6px" : "0";
+  $("#meter").classList.toggle("over", over);
+  $("#meter-tag").textContent = over
+    ? "Vượt hạn mức của gói"
+    : (used === 0 ? "Chưa có từ khoá nào" : "Từ trùng nhau chỉ tính một lần");
+
+  const box = $("#cap-err");
+  if (over) {
+    $("#cap-err-txt").innerHTML =
+      "Đang có <b>" + nf.format(used) + "</b> từ khoá, vượt hạn mức <b>" + nf.format(limit) +
+      "</b> của gói. Hãy bớt từ khoá, hoặc nâng hạn mức ở bước 2.";
+    box.hidden = false;
+  } else {
+    box.hidden = true;
+  }
+}
+
+function renderClusters() {
+  const host = $("#clusters");
+  host.innerHTML = "";
+  clusters.forEach((c, idx) => {
+    const el = document.createElement("div");
+    el.className = "cluster";
+    el.innerHTML =
+      '<div class="cluster-top">' +
+        '<div class="field">' +
+          '<label for="cn-' + c.id + '">Tên nhóm</label>' +
+          '<input id="cn-' + c.id + '" type="text" maxlength="200" value="' + esc(c.name) + '" placeholder="Ví dụ: Dòng sản phẩm sữa tươi" data-cname="' + c.id + '" autocomplete="off" />' +
+        "</div>" +
+        (clusters.length > 1
+          ? '<button class="icon-btn" type="button" data-drop="' + c.id + '" aria-label="Bỏ nhóm ' + esc(c.name) + '" title="Bỏ nhóm này">' +
+            '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg></button>'
+          : "") +
+      "</div>" +
+      '<div class="field" style="margin-top:14px">' +
+        '<label for="ct-' + c.id + '">Từ khoá trong nhóm</label>' +
+        '<input id="ct-' + c.id + '" type="text" placeholder="Gõ từ khoá rồi nhấn Enter" data-cterm="' + c.id + '" autocomplete="off" spellcheck="false" />' +
+        '<p class="help">Dán nhiều từ một lúc cũng được, cách nhau bằng dấu phẩy hoặc xuống dòng.</p>' +
+      "</div>" +
+      '<div class="chips" id="chips-' + c.id + '"></div>';
+    host.appendChild(el);
+    renderChips(c);
+  });
+  paintMeter();
+}
+
+function renderChips(c) {
+  const host = $("#chips-" + c.id);
+  if (!host) return;
+  if (c.terms.length === 0) {
+    host.innerHTML = '<span class="chips-empty">Nhóm này chưa có từ khoá. Nhóm rỗng vẫn tạo được, nhưng sẽ không thu được gì.</span>';
+    return;
+  }
+  host.innerHTML = c.terms.map((t) =>
+    '<span class="chip">' + esc(t) +
+      '<button type="button" data-del="' + esc(t) + '" data-in="' + c.id + '" aria-label="Bỏ từ khoá ' + esc(t) + '">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg>' +
+      "</button>" +
+    "</span>").join("");
+}
+
+function addTerms(cluster, rawText) {
+  const parts = String(rawText).split(/[,\n;]+/);
+  const fresh = canonicalizeTerms(parts);
+  let added = 0;
+  for (const t of fresh) {
+    if (!cluster.terms.includes(t)) { cluster.terms.push(t); added++; }
+  }
+  return added;
+}
+
+$("#clusters").addEventListener("input", (e) => {
+  const nameId = e.target.getAttribute("data-cname");
+  if (nameId) {
+    const c = clusters.find((x) => String(x.id) === nameId);
+    if (c) c.name = e.target.value;
+  }
+});
+
+$("#clusters").addEventListener("keydown", (e) => {
+  const termId = e.target.getAttribute("data-cterm");
+  if (!termId) return;
+  const c = clusters.find((x) => String(x.id) === termId);
+  if (!c) return;
+
+  if (e.key === "Enter" || e.key === ",") {
+    e.preventDefault();
+    if (e.target.value.trim() === "") return;
+    addTerms(c, e.target.value);
+    e.target.value = "";
+    renderChips(c);
+    paintMeter();
+  } else if (e.key === "Backspace" && e.target.value === "" && c.terms.length) {
+    e.preventDefault();
+    c.terms.pop();
+    renderChips(c);
+    paintMeter();
+  }
+});
+
+// Dán một danh sách dài: nhận luôn, không cần nhấn Enter.
+$("#clusters").addEventListener("paste", (e) => {
+  const termId = e.target.getAttribute("data-cterm");
+  if (!termId) return;
+  const text = (e.clipboardData || window.clipboardData).getData("text");
+  if (!/[,\n;]/.test(text)) return;             // dán một từ thì để người dùng tự nhấn Enter
+  e.preventDefault();
+  const c = clusters.find((x) => String(x.id) === termId);
+  if (!c) return;
+  addTerms(c, text);
+  e.target.value = "";
+  renderChips(c);
+  paintMeter();
+});
+
+$("#clusters").addEventListener("blur", (e) => {
+  const termId = e.target.getAttribute && e.target.getAttribute("data-cterm");
+  if (!termId || e.target.value.trim() === "") return;
+  const c = clusters.find((x) => String(x.id) === termId);
+  if (!c) return;
+  addTerms(c, e.target.value);
+  e.target.value = "";
+  renderChips(c);
+  paintMeter();
+}, true);
+
+$("#clusters").addEventListener("click", (e) => {
+  const del = e.target.closest("[data-del]");
+  if (del) {
+    const c = clusters.find((x) => String(x.id) === del.getAttribute("data-in"));
+    if (c) {
+      c.terms = c.terms.filter((t) => t !== del.getAttribute("data-del"));
+      renderChips(c);
+      paintMeter();
+    }
+    return;
+  }
+  const drop = e.target.closest("[data-drop]");
+  if (drop) {
+    clusters = clusters.filter((x) => String(x.id) !== drop.getAttribute("data-drop"));
+    renderClusters();
+  }
+});
+
+$("#add-cluster").addEventListener("click", () => {
+  clusters.push({ id: nextClusterId++, name: "", terms: [], draft: "" });
+  renderClusters();
+  const inputs = $$("[data-cname]");
+  if (inputs.length) inputs[inputs.length - 1].focus();
+});
+
+renderClusters();
+
+/* ═══════════════════════════════════════════════════════════════════════
+   9. Lỗi trên từng trường
+   ═══════════════════════════════════════════════════════════════════════ */
+function setErr(field, msg) {
+  const wrap = $('[data-field="' + field + '"]');
+  if (!wrap) return;
+  wrap.classList.add("bad");
+  const p = $(".err", wrap);
+  if (p) p.textContent = msg;
+}
+function clearErr(field) {
+  const wrap = $('[data-field="' + field + '"]');
+  if (wrap) wrap.classList.remove("bad");
+}
+function clearAllErrs() { $$(".field.bad").forEach((f) => f.classList.remove("bad")); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   10. Kiểm tra từng bước trước khi cho đi tiếp
+   ═══════════════════════════════════════════════════════════════════════ */
+function validateStep(n) {
+  clearAllErrs();
+  const bad = [];
+
+  if (n === 0) {
+    const name = fName.value.trim();
+    if (!name)             { setErr("name", "Hãy nhập tên khách hàng."); bad.push("name"); }
+    else if (name.length > 200) { setErr("name", "Tối đa 200 ký tự."); bad.push("name"); }
+
+    const sErr = checkSubdomain(fSub.value.trim());
+    if (sErr) { setErr("subdomain", sErr); bad.push("subdomain"); }
+
+    const lErr = checkLogoUrl(fLogo.value.trim());
+    if (lErr) { setErr("logo", lErr); bad.push("logo"); }
+  }
+
+  if (n === 1) {
+    // Lý do KHÔNG bắt buộc với người nhập. Nhưng máy chủ đòi một câu không rỗng
+    // (reason dài 1..500), nên để trống thì điền câu mặc định, không chặn người dùng.
+    const reason = fReason.value.trim();
+    if (reason.length > 500) { setErr("reason", "Tối đa 500 ký tự."); bad.push("reason"); }
+
+    if (fOverride.value !== "") {
+      const ov = Number(fOverride.value);
+      if (!Number.isInteger(ov) || ov < 0 || ov > 1000000) {
+        setErr("override", "Nhập số nguyên từ 0 đến 1.000.000, hoặc để trống.");
+        bad.push("override");
+      }
+    }
+    const cap = Number(fCap.value);
+    if (!Number.isInteger(cap) || cap < 0 || cap > 1000) {
+      setErr("cap", "Nhập số nguyên từ 0 đến 1.000.");
+      bad.push("cap");
+    }
+    if (currentPackageKey() === "enterprise" && fOverride.value === "") {
+      setErr("override", "Gói Enterprise không có hạn mức mặc định. Hãy nhập hạn mức đã thoả thuận.");
+      bad.push("override");
+    }
+  }
+
+  if (n === 2) {
+    const used  = usedTerms().size;
+    const limit = keywordLimit();
+    if (used === 0) {
+      $("#cap-err-txt").textContent = "Chưa có từ khoá nào. Không có từ khoá thì hệ thống không thu được dữ liệu cho khách.";
+      $("#cap-err").hidden = false;
+      bad.push("terms");
+    } else if (used > limit) {
+      bad.push("terms");                             // paintMeter đã hiện thông báo
+    } else {
+      const named = clusters.filter((c) => c.terms.length > 0);
+      const names = named.map((c) => canonicalizeKeyword(c.name));
+      if (names.some((x) => x === "")) {
+        $("#cap-err-txt").textContent = "Có nhóm chưa được đặt tên. Hãy đặt tên cho từng nhóm đang có từ khoá.";
+        $("#cap-err").hidden = false;
+        bad.push("terms");
+      } else if (new Set(names).size !== names.length) {
+        $("#cap-err-txt").textContent = "Hai nhóm đang trùng tên. Mỗi nhóm của một khách phải có tên riêng.";
+        $("#cap-err").hidden = false;
+        bad.push("terms");
+      }
+    }
+  }
+
+  if (n === 3) {
+    const eErr = checkEmail($("#f-email").value.trim());
+    if (eErr) { setErr("email", eErr); bad.push("email"); }
+  }
+
+  if (bad.length) {
+    const first = $('[data-field="' + bad[0] + '"]') || $("#cap-err");
+    if (first) {
+      const input = first.querySelector && first.querySelector("input, textarea, select");
+      (input || first).scrollIntoView({ block: "center", behavior: "smooth" });
+      if (input) input.focus({ preventScroll: true });
+    }
+  }
+  return bad.length === 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   11. Điều hướng giữa các bước
+   ═══════════════════════════════════════════════════════════════════════ */
+const STEP_LABELS = ["Thông tin khách", "Gói dịch vụ", "Từ khoá theo dõi", "Người dùng đầu tiên", "Xem lại và tạo"];
+
+function showStep(n) {
+  step = n;
+  $$(".step").forEach((s) => s.classList.toggle("on", Number(s.dataset.step) === n));
+  $$("#rail .rail-item").forEach((b, i) => {
+    if (i === n) b.setAttribute("aria-current", "step");
+    else b.removeAttribute("aria-current");
+    b.classList.toggle("done", i < n);
+    const num = $(".rail-num", b);
+    num.innerHTML = i < n
+      ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg>'
+      : String(i + 1);
+  });
+
+  $("#btn-back").hidden = n === 0;
+  $("#step-count").textContent = "Bước " + (n + 1) + " trong 5";
+  const next = $("#btn-next");
+  next.innerHTML = n === LAST_STEP
+    ? 'Tạo khách hàng <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg>'
+    : 'Tiếp tục <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-right"/></svg>';
+
+  if (n === LAST_STEP) renderRecap();
+  if (n === 2) paintMeter();
+
+  const top = $("#thietlap").getBoundingClientRect().top + window.scrollY - 84;
+  if (window.scrollY > top + 200 || window.scrollY < top - 200) window.scrollTo({ top: top, behavior: "smooth" });
+}
+
+$("#btn-next").addEventListener("click", () => {
+  if (step === LAST_STEP) { submitAll(); return; }
+  if (!validateStep(step)) return;
+  showStep(step + 1);
+});
+$("#btn-back").addEventListener("click", () => { if (step > 0) showStep(step - 1); });
+
+// Cột bước: chỉ cho nhảy tới bước đã qua được, để không bỏ sót kiểm tra.
+$("#rail").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-go]");
+  if (!b) return;
+  const target = Number(b.getAttribute("data-go"));
+  if (target <= step) { showStep(target); return; }
+  for (let i = step; i < target; i++) {
+    if (!validateStep(i)) { showStep(i); return; }
+  }
+  showStep(target);
+});
+
+// Enter trong ô nhập nghĩa là đi tiếp, trừ ô thêm từ khoá (đã xử lý riêng).
+$("#wiz").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+  if (e.target.tagName === "TEXTAREA") return;
+  if (e.target.getAttribute && e.target.getAttribute("data-cterm")) return;
+  e.preventDefault();
+  $("#btn-next").click();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   12. Bước 5: tóm tắt và dữ liệu gửi lên
+   ═══════════════════════════════════════════════════════════════════════ */
+function collect() {
+  const key = currentPackageKey();
+  const ov  = fOverride.value === "" ? null : Number(fOverride.value);
+  return {
+    name: fName.value.trim(),
+    subdomain: fSub.value.trim(),
+    logo: fLogo.value.trim() || null,
+    locale: $("#f-locale").value,
+    packageKey: key,
+    packageLabel: PACKAGES[key].label,
+    runsPerDay: ov !== null ? ov : PACKAGES[key].runs,
+    override: ov,
+    maxKeywords: keywordLimit(),
+    reason: fReason.value.trim() || DEFAULT_REASON,
+    reasonAuto: fReason.value.trim() === "",
+    clusters: clusters
+      .filter((c) => c.terms.length > 0)
+      .map((c) => ({ name: c.name.trim(), terms: c.terms.slice() })),
+    email: $("#f-email").value.trim(),
+    displayName: $("#f-display").value.trim() || null,
+    group: $("#f-group").selectedOptions[0].textContent.trim(),
+    groupKey: $("#f-group").value,
+    am: $("#f-am").value ? $("#f-am").selectedOptions[0].textContent.trim() : null
+  };
+}
+
+function rowsHtml(rows) {
+  return rows.map((r) =>
+    '<div class="recap-row"><dt>' + esc(r[0]) + "</dt>" +
+    '<dd class="' + (r[2] || "") + '">' + (r[1] === null || r[1] === "" ? "Chưa điền" : esc(r[1])) + "</dd></div>"
+  ).join("");
+}
+
+function card(icon, title, goStep, rows) {
+  return '<div class="recap-card"><div class="recap-head">' +
+    '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="' + icon + '"/></svg>' +
+    esc(title) +
+    '<button class="btn btn-quiet edit" type="button" data-go="' + goStep + '">Sửa</button>' +
+    '</div><div class="recap-rows"><dl style="margin:0">' + rowsHtml(rows) + "</dl></div></div>";
+}
+
+function renderRecap() {
+  const d = collect();
+  const used = usedTerms().size;
+
+  $("#recap").innerHTML =
+    card("#i-building", "Thông tin khách hàng", 0, [
+      ["Tên khách hàng", d.name],
+      ["Trang riêng", d.subdomain ? d.subdomain + ".tsl.vn" : "", "mono"],
+      ["Ngôn ngữ mặc định", d.locale === "vi" ? "Tiếng Việt" : "Tiếng Anh"],
+      ["Logo", d.logo || "Chưa có, dùng chữ đầu của tên khách", d.logo ? "mono" : "none"]
+    ]) +
+    card("#i-box", "Gói dịch vụ", 1, [
+      ["Gói", d.packageLabel],
+      ["Lượt lấy dữ liệu mỗi ngày", d.runsPerDay === null ? "Chưa có" : nf.format(d.runsPerDay) +
+        (d.override !== null ? " (hạn mức riêng theo hợp đồng)" : " (theo gói)")],
+      ["Số từ khoá tối đa", nf.format(d.maxKeywords)],
+      ["Lý do ghi nhận", d.reason + (d.reasonAuto ? " (câu mặc định, vì bạn để trống)" : "")]
+    ]) +
+    card("#i-tag", "Từ khoá theo dõi", 2, [
+      ["Số nhóm", nf.format(d.clusters.length)],
+      ["Số từ khoá khác nhau", nf.format(used) + " trong " + nf.format(d.maxKeywords)]
+    ].concat(d.clusters.map((c) => [
+      c.name || "Nhóm chưa đặt tên",
+      c.terms.slice(0, 6).join(", ") + (c.terms.length > 6 ? " và " + (c.terms.length - 6) + " từ nữa" : ""),
+      "mono"
+    ]))) +
+    card("#i-user", "Người dùng đầu tiên", 3, [
+      ["Email đăng nhập", d.email, "mono"],
+      ["Tên người dùng", d.displayName || "Chưa điền", d.displayName ? "" : "none"],
+      ["Nhóm quyền", d.group],
+      ["Người phụ trách", d.am || "Chưa gán", d.am ? "" : "none"]
+    ]);
+
+  // Bốn lệnh gọi thật, theo đúng đường dẫn và tên trường của hệ thống.
+  const calls = [
+    { "POST /api/v1/tenants": {
+        name: d.name, subdomain: d.subdomain,
+        branding_logo_url: d.logo, default_locale: d.locale, plan: d.packageKey } },
+    { "PUT /api/v1/tenants/{tenantId}/package": {
+        packageKey: d.packageKey, collectionRunLimitOverride: d.override,
+        expectedRevision: null, reason: d.reason } }
+  ];
+  d.clusters.forEach((c) => {
+    calls.push({ "POST /api/v1/tenants/{tenantId}/watchlist/clusters": {
+      name: c.name, terms: c.terms, description: null, active: true } });
+  });
+  calls.push({ "POST /api/v1/staff/tenants/{tenantId}/users": {
+    email: d.email, display_name: d.displayName } });
+
+  $("#payload").textContent = JSON.stringify(calls, null, 2);
+}
+
+$("#recap").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-go]");
+  if (b) showStep(Number(b.getAttribute("data-go")));
+});
+
+/* ═══════════════════════════════════════════════════════════════════════
+   13. Tạo khách hàng.
+      TRANG DEMO: chưa gọi API thật. Chỗ này là nơi gắn 4 lệnh gọi ở trên.
+   ═══════════════════════════════════════════════════════════════════════ */
+function makeTempPassword() {
+  const abc = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(20);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => abc[b % abc.length]).join("");
+}
+
+function submitAll() {
+  for (let i = 0; i <= 3; i++) {
+    if (!validateStep(i)) { showStep(i); return; }
+  }
+  const btn = $("#btn-next");
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-load"/></svg> Đang tạo...';
+
+  // Thay đoạn setTimeout này bằng 4 lệnh gọi thật khi nối vào hệ thống.
+  setTimeout(() => {
+    const d = collect();
+    $("#recap-wrap").hidden = true;
+    $("#finished").hidden = false;
+    $("#foot").hidden = true;
+
+    $("#done-lede").textContent =
+      "Khách hàng " + d.name + " đã hoạt động, với " + nf.format(usedTerms().size) +
+      " từ khoá và một tài khoản đăng nhập. Dữ liệu bắt đầu về từ bây giờ.";
+
+    $("#done-rows").innerHTML = rowsHtml([
+      ["Địa chỉ trang", "https://" + d.subdomain + ".tsl.vn", "mono"],
+      ["Email đăng nhập", d.email, "mono"],
+      ["Gói dịch vụ", d.packageLabel + ", " + (d.runsPerDay === null ? "hạn mức theo thoả thuận" : nf.format(d.runsPerDay) + " lượt mỗi ngày")],
+      ["Người phụ trách", d.am || "Chưa gán", d.am ? "" : "none"]
+    ]);
+
+    $("#temp-pass").textContent = makeTempPassword();
+
+    $$("#rail .rail-item").forEach((b) => {
+      b.classList.add("done");
+      b.removeAttribute("aria-current");
+      b.disabled = true;
+      $(".rail-num", b).innerHTML =
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg>';
+    });
+    $("#finished").scrollIntoView({ block: "center", behavior: "smooth" });
+  }, 900);
+}
+
+$("#copy-pass").addEventListener("click", async (e) => {
+  const btn = e.currentTarget;
+  try {
+    await navigator.clipboard.writeText($("#temp-pass").textContent);
+    btn.textContent = "Đã sao chép";
+  } catch (err) {
+    btn.textContent = "Hãy chọn và sao chép tay";
+  }
+  setTimeout(() => {
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg> Sao chép';
+  }, 2200);
+});
+
+$("#new-again").addEventListener("click", () => { location.reload(); });
+
+/* Nút chọn gói ở phần bảng giá đưa thẳng vào bước 2. */
+$$("[data-choose]").forEach((b) => {
+  b.addEventListener("click", () => {
+    const key = b.getAttribute("data-choose");
+    const radio = $('input[name="packageKey"][value="' + key + '"]');
+    if (radio) { radio.checked = true; paintPackage(); }
+    if (validateStep(0)) showStep(1);
+    else showStep(0);
+  });
+});
+
+/* Mở ở bước 1. Đặt TRƯỚC phần hiệu ứng bên dưới, để nếu hiệu ứng có lỗi thì
+   phần thiết lập vẫn dùng được. */
+showStep(0);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   14. Hiện dần khi cuộn tới. Dùng IntersectionObserver, không nghe sự kiện
+       cuộn, để không tốn khung hình. Trình duyệt nào không có thì hiện luôn,
+       không để hiệu ứng làm hỏng phần thiết lập.
+   ═══════════════════════════════════════════════════════════════════════ */
+if (typeof IntersectionObserver === "function") {
+  const io = new IntersectionObserver((entries) => {
+    for (const en of entries) {
+      if (en.isIntersecting) { en.target.classList.add("seen"); io.unobserve(en.target); }
+    }
+  }, { threshold: 0.18 });
+  $$(".reveal").forEach((el) => io.observe(el));
+} else {
+  $$(".reveal").forEach((el) => el.classList.add("seen"));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   15. Tự kiểm tra: mở trang với ?selftest=1 để chạy.
+       Đây là chốt duy nhất bảo vệ logic chuẩn hoá và kiểm tra hợp lệ.
+   ═══════════════════════════════════════════════════════════════════════ */
+function selftest() {
+  const out = [];
+  let fails = 0;
+  const eq = (label, got, want) => {
+    const ok = JSON.stringify(got) === JSON.stringify(want);
+    if (!ok) fails++;
+    out.push('<div class="' + (ok ? "ok" : "no") + '">' + (ok ? "OK  " : "SAI ") + label +
+      (ok ? "" : "<br>   nhận: " + esc(JSON.stringify(got)) + "<br>   cần: " + esc(JSON.stringify(want))) + "</div>");
+  };
+
+  // Chuẩn hoá: chữ thường, bỏ khoảng trắng hai đầu, GIỮ dấu.
+  eq("hoa thành thường", canonicalizeKeyword("VinFast"), "vinfast");
+  eq("bỏ khoảng trắng", canonicalizeKeyword("  Bách Hoá Xanh  "), "bách hoá xanh");
+  eq("giữ dấu tiếng Việt", canonicalizeKeyword("Bách Hoá Xanh") !== canonicalizeKeyword("Bach Hoa Xanh"), true);
+  eq("NFC gộp dấu tổ hợp", canonicalizeKeyword("Ho\u0301a"), "hóa");
+  eq("bỏ từ rỗng và từ lặp", canonicalizeTerms(["A", " a ", "", "  ", "B"]), ["a", "b"]);
+  eq("giữ thứ tự nhập", canonicalizeTerms(["Zeta", "Alpha", "zeta"]), ["zeta", "alpha"]);
+
+  // Tên miền
+  eq("tên miền hợp lệ", checkSubdomain("truong-an"), null);
+  eq("chặn dấu chấm", checkSubdomain("a.b") !== null, true);
+  eq("chặn gạch ở cuối", checkSubdomain("abc-") !== null, true);
+  eq("chặn gạch ở đầu", checkSubdomain("-abc") !== null, true);
+  eq("chặn gạch dưới", checkSubdomain("a_b") !== null, true);
+  eq("chặn chữ hoa", checkSubdomain("Abc") !== null, true);
+  eq("chấp nhận một ký tự", checkSubdomain("a"), null);
+  eq("chặn quá 63 ký tự", checkSubdomain("a".repeat(64)) !== null, true);
+  eq("tạo tên miền từ tên có dấu", slugify("Công ty Sữa Trường An"), "cong-ty-sua-truong-an");
+  eq("tạo tên miền không để gạch ở cuối", slugify("Đại Việt!!!"), "dai-viet");
+
+  // Logo
+  eq("logo để trống được", checkLogoUrl(""), null);
+  eq("logo https hợp lệ", checkLogoUrl("https://a.vn/l.svg"), null);
+  eq("chặn logo http", checkLogoUrl("http://a.vn/l.svg") !== null, true);
+  eq("chặn logo javascript", checkLogoUrl("javascript:alert(1)") !== null, true);
+  eq("chặn logo có mật khẩu trong đường dẫn", checkLogoUrl("https://u:p@a.vn/l.svg") !== null, true);
+
+  // Email
+  eq("email hợp lệ", checkEmail("a@b.vn"), null);
+  eq("chặn email thiếu tên miền", checkEmail("a@b") !== null, true);
+  eq("chặn email rỗng", checkEmail("") !== null, true);
+
+  // Đếm từ khoá: hợp các tập, không cộng dồn.
+  const save = clusters;
+  clusters = [{ id: 9, name: "x", terms: ["a", "b"] }, { id: 10, name: "y", terms: ["b", "c"] }];
+  eq("từ trùng giữa hai nhóm chỉ tính một lần", usedTerms().size, 3);
+  clusters = save;
+
+  const box = $("#selftest");
+  box.className = "on";
+  box.innerHTML = "<b>Tự kiểm tra: " + (fails === 0 ? '<span class="ok">tất cả đạt</span>' :
+    '<span class="no">' + fails + " mục sai</span>") + "</b><br>" + out.join("");
+  if (fails) console.error("selftest: " + fails + " mục sai");
+  else console.log("selftest: tất cả đạt");
+}
+if (new URLSearchParams(location.search).get("selftest") === "1") selftest();
+</script>
+</body>
+</html>
