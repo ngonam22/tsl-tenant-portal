@@ -1,7 +1,7 @@
 {
   "sub": "demo-user",
-  "email": "tenant-demo@invalid.example",
-  "role": "member",
-  "tenant_id": "tenant-demo",
-  "is_platform_staff": false
+  "tenant_id": "dddddddd-0000-4000-8000-00000000000d",
+  "role": "viewer",
+  "is_platform_staff": false,
+  "permissions": []
 }

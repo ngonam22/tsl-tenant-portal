@@ -1,0 +1,16 @@
+{
+  "actor": {
+    "subject": "demo-user",
+    "type": "tenant_operator",
+    "display_name": "Demo operator",
+    "email": "tenant-demo@invalid.example"
+  },
+  "contexts": [
+    {
+      "tenant_id": "dddddddd-0000-4000-8000-00000000000d",
+      "name": "Minh An Dairy",
+      "logo_url": null,
+      "default_locale": "vi"
+    }
+  ]
+}

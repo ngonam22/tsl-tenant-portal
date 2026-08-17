@@ -1,0 +1,25 @@
+{
+  "tenant": {
+    "tenant_id": "dddddddd-0000-4000-8000-00000000000d",
+    "name": "Minh An Dairy",
+    "logo_url": null,
+    "default_locale": "vi"
+  },
+  "actor": {
+    "subject": "demo-user",
+    "type": "tenant_operator",
+    "display_name": "Demo operator",
+    "email": "tenant-demo@invalid.example"
+  },
+  "permissions": [
+    "watchlist.view",
+    "crisis.view",
+    "crisis.triage",
+    "alert.view",
+    "analysis.view",
+    "usage.view"
+  ],
+  "support": { "account_managers": [], "general_email": null },
+  "context_version": "demo",
+  "fetched_at": "2026-07-31T00:00:00.000Z"
+}
