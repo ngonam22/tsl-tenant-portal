@@ -1,0 +1,18 @@
+{
+  "brandPct": 50,
+  "globalMaxPages": 5,
+  "scrollDelayMinMs": 250,
+  "scrollDelayMaxMs": 450,
+  "globalTermIntervalMs": 600000,
+  "profileScanEnabled": false,
+  "profileScanPct": 5,
+  "profileDefaultLimit": 25,
+  "profileDefaultSinceMs": 86400000,
+  "backfillPct": 10,
+  "backfillLookbackDefaultMs": 2592000000,
+  "backfillUntilLagDefaultMs": 21600000,
+  "entitlement": {
+    "key": "v1-single",
+    "dailyQuota": 100
+  }
+}

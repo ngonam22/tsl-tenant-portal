@@ -1,0 +1,36 @@
+{
+  "collection": {
+    "posts": 42,
+    "analyzed": 40,
+    "analyzed_pct": 95,
+    "with_verdict": 38,
+    "entities": 12,
+    "last_observed_ms": null
+  },
+  "pulse": {
+    "sentiment": {
+      "pos": 10,
+      "neg": 8,
+      "neutral": 20,
+      "mixed": 2
+    },
+    "toxicity": {
+      "toxic": 3,
+      "clean": 37,
+      "total": 40,
+      "toxic_pct": 7
+    }
+  },
+  "needs_action": {
+    "review_queue": 4,
+    "crisis_active": 1
+  },
+  "llm": {
+    "routed": 40,
+    "escalated": 8,
+    "escalation_rate": 0.2,
+    "llm_calls": 6,
+    "llm_calls_per_post": 0.15,
+    "by_reason": {}
+  }
+}

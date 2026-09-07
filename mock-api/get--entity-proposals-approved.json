@@ -1,0 +1,15 @@
+[
+  {
+    "id": "13",
+    "surface": "vinfast",
+    "canonical": "vinfast",
+    "entity_type": "BRAND",
+    "status": "approved",
+    "source": "post_adjudication_v1",
+    "occurrences": 20,
+    "example_post_id": null,
+    "reviewer": "admin-ops",
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-01-01T00:00:00.000Z"
+  }
+]

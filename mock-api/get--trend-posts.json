@@ -1,0 +1,43 @@
+{
+  "posts": [
+    {
+      "post_id": "threads:11",
+      "provider": "threads",
+      "provider_url": "https://www.threads.net/t/11",
+      "text_preview": "Post one about alpha",
+      "author_pseudonym": "p1",
+      "author_display_name": "Nam",
+      "sentiment": {
+        "label": "pos",
+        "confidence": 0.9
+      },
+      "toxicity": 0.1,
+      "engagement": {
+        "like_count": 10,
+        "share_count": 2,
+        "comment_count": 1
+      },
+      "score": 0.92,
+      "created_at_ms": 1
+    },
+    {
+      "post_id": "threads:12",
+      "provider": "threads",
+      "provider_url": null,
+      "text_preview": "Post two about alpha",
+      "author_pseudonym": "p2",
+      "author_display_name": null,
+      "sentiment": {
+        "label": "neg",
+        "confidence": 0.7
+      },
+      "toxicity": 0.4,
+      "engagement": {
+        "like_count": 3
+      },
+      "score": 0.55,
+      "created_at_ms": 2
+    }
+  ],
+  "next_cursor": null
+}

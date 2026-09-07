@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "user_id": "demo-platform-admin",
+      "email": "admin@tsl.local",
+      "display_name": "TSL Platform Admin",
+      "status": "active",
+      "locked_until": null,
+      "failed_login_count": 0,
+      "last_login_at": "2026-09-07T01:30:00.000Z",
+      "role": "admin",
+      "assigned_tenant_ids": [],
+      "is_account_manager": false
+    },
+    {
+      "user_id": "demo-account-manager-1",
+      "email": "linh.nguyen@tsl.local",
+      "display_name": "Linh Nguyen",
+      "status": "active",
+      "locked_until": null,
+      "failed_login_count": 0,
+      "last_login_at": "2026-09-06T08:15:00.000Z",
+      "role": "account_manager",
+      "assigned_tenant_ids": ["t-1", "t-2"],
+      "is_account_manager": true
+    },
+    {
+      "user_id": "demo-account-manager-2",
+      "email": "minh.tran@tsl.local",
+      "display_name": "Minh Tran",
+      "status": "suspended",
+      "locked_until": null,
+      "failed_login_count": 0,
+      "last_login_at": "2026-08-29T03:45:00.000Z",
+      "role": "account_manager",
+      "assigned_tenant_ids": [],
+      "is_account_manager": true
+    }
+  ],
+  "total": 3
+}

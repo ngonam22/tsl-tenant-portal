@@ -1,28 +1,212 @@
 {
-  "items": [
+  "crisis": [
     {
-      "post_id": "demo-post-001",
-      "severity": "critical",
-      "score": 92.4,
-      "excerpt": "Một số tài khoản đang lan truyền cáo buộc chưa được kiểm chứng về chất lượng của sản phẩm mẫu.",
-      "triage_status": "new",
-      "created_at": "2026-07-29T01:20:00.000Z"
+      "post_id": "threads:900",
+      "post_kind": "post",
+      "parent_id": null,
+      "root_id": null,
+      "depth": 0,
+      "provider_url": "https://www.threads.net/t/900",
+      "created_at_ms": 1735689600000,
+      "reach_raw": 5000,
+      "engagement": {
+        "like_count": 1200,
+        "comment_count": 34,
+        "share_count": 8
+      },
+      "crisis": {
+        "score": 92.3,
+        "severity": "critical",
+        "components": {
+          "content_risk": 0.9,
+          "toxicity_risk": 0.6,
+          "harm_severity": 0.95,
+          "credibility": 0.8,
+          "reach_norm": 0.7,
+          "reach_mult": 1.2,
+          "authenticity": 0.9
+        },
+        "reasons": [
+          {
+            "signal": "content:health_safety",
+            "weight": 1,
+            "matches": [
+              {
+                "term": "ngộ độc",
+                "span_start": 5
+              }
+            ]
+          },
+          {
+            "signal": "reach",
+            "value": 5000
+          }
+        ],
+        "crisis_topics": [
+          {
+            "topic": "Nguy hại sức khỏe",
+            "category": "health_safety",
+            "weight": 1
+          }
+        ],
+        "mentioned_brands": [
+          "BrandX"
+        ],
+        "manual_review_only": false,
+        "review_reason": null,
+        "redacted_text": "Sản phẩm [REDACTED] gây ngộ độc, nhiều người nhập viện.",
+        "llm_topics": {
+          "adjudicated": true,
+          "is_crisis": true,
+          "category": "health_safety",
+          "topic": "Nguy hại sức khỏe",
+          "confidence": 0.91,
+          "rationale": "Reports of hospitalization.",
+          "model_id": "m1",
+          "prompt_version": "v1"
+        }
+      }
     },
     {
-      "post_id": "demo-post-002",
-      "severity": "high",
-      "score": 78.1,
-      "excerpt": "Thảo luận kêu gọi tẩy chay thương hiệu mẫu tăng nhanh trong vài giờ gần đây.",
-      "triage_status": "new",
-      "created_at": "2026-07-29T00:45:00.000Z"
+      "post_id": "threads:903",
+      "post_kind": "post",
+      "parent_id": null,
+      "root_id": null,
+      "depth": 0,
+      "provider_url": null,
+      "created_at_ms": 1735689600000,
+      "reach_raw": 3000,
+      "crisis": {
+        "score": 81,
+        "severity": "high",
+        "components": {
+          "content_risk": 0.8,
+          "authenticity": 0.2
+        },
+        "reasons": [
+          {
+            "signal": "content:exec_misconduct",
+            "weight": 0.9,
+            "matches": [
+              {
+                "term": "scandal"
+              }
+            ]
+          }
+        ],
+        "crisis_topics": [
+          {
+            "topic": "Bê bối lãnh đạo / KOL",
+            "category": "exec_misconduct",
+            "weight": 0.9
+          }
+        ],
+        "mentioned_brands": [
+          "BrandY"
+        ],
+        "manual_review_only": true,
+        "review_reason": "llm_disagree_high_severity",
+        "redacted_text": "[REDACTED] scandal — coordinated posting suspected.",
+        "llm_topics": {
+          "adjudicated": true,
+          "is_crisis": false,
+          "category": null,
+          "topic": null,
+          "confidence": 0.4,
+          "rationale": "Looks coordinated.",
+          "model_id": "m1",
+          "prompt_version": "v1"
+        }
+      }
     },
     {
-      "post_id": "demo-post-003",
-      "severity": "high",
-      "score": 71.6,
-      "excerpt": "Nhiều phản ánh tổng hợp cho rằng thời gian phản hồi hỗ trợ đang chậm hơn bình thường.",
-      "triage_status": "acknowledged",
-      "created_at": "2026-07-28T23:30:00.000Z"
+      "post_id": "threads:901",
+      "post_kind": "comment",
+      "parent_id": "threads:900",
+      "root_id": "threads:900",
+      "depth": 1,
+      "provider_url": null,
+      "created_at_ms": 1735689600000,
+      "reach_raw": 200,
+      "engagement": {
+        "like_count": 40,
+        "comment_count": 12,
+        "share_count": 2
+      },
+      "crisis": {
+        "score": 78,
+        "severity": "high",
+        "components": {
+          "content_risk": 0.7,
+          "credibility": 0.6,
+          "reach_norm": 0.3
+        },
+        "reasons": [
+          {
+            "signal": "content:boycott",
+            "weight": 0.7,
+            "matches": [
+              {
+                "term": "tẩy chay"
+              }
+            ]
+          }
+        ],
+        "crisis_topics": [
+          {
+            "topic": "Tẩy chay / phản đối có tổ chức",
+            "category": "boycott",
+            "weight": 0.7
+          }
+        ],
+        "mentioned_brands": [
+          "BrandX"
+        ],
+        "manual_review_only": false,
+        "review_reason": null,
+        "redacted_text": "Tẩy chay [REDACTED] ngay!",
+        "llm_topics": {}
+      }
+    },
+    {
+      "post_id": "threads:902",
+      "post_kind": "comment",
+      "parent_id": "threads:800",
+      "root_id": "threads:800",
+      "depth": 1,
+      "provider_url": null,
+      "created_at_ms": 1735689600000,
+      "reach_raw": 50,
+      "crisis": {
+        "score": 55.5,
+        "severity": "medium",
+        "components": {
+          "content_risk": 0.4
+        },
+        "reasons": [
+          {
+            "signal": "content:generic_complaint",
+            "weight": 0.3,
+            "matches": [
+              {
+                "term": "tệ"
+              }
+            ]
+          }
+        ],
+        "crisis_topics": [
+          {
+            "topic": "Than phiền chung",
+            "category": "generic_complaint",
+            "weight": 0.3
+          }
+        ],
+        "mentioned_brands": [],
+        "manual_review_only": false,
+        "review_reason": null,
+        "redacted_text": "Dịch vụ tệ quá.",
+        "llm_topics": {}
+      }
     }
   ]
 }

@@ -1,0 +1,13 @@
+[
+  {
+    "brand_id": "brand-1",
+    "keyword": "acme",
+    "backfill_enabled": true,
+    "backfill_lookback_ms": 2592000000,
+    "backfill_until_lag_ms": null,
+    "backfill_max_pages": 5,
+    "backfill_priority_weight": 2,
+    "backfill_status": "pending",
+    "backfill_config_version": 3
+  }
+]

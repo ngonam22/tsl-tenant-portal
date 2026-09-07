@@ -1,0 +1,38 @@
+{
+  "items": [
+    {
+      "cluster_id": "wc-1",
+      "tenant_id": "t-1",
+      "name": "Competitors",
+      "terms": [
+        "th true milk",
+        "vinamilk",
+        "koi thé"
+      ],
+      "description": null,
+      "active": true,
+      "created_at": "2026-07-01T00:00:00.000Z",
+      "updated_at": "2026-07-01T00:00:00.000Z",
+      "deleted_at": null
+    },
+    {
+      "cluster_id": "wc-2",
+      "tenant_id": "t-1",
+      "name": "Old campaign",
+      "terms": [
+        "milk festival"
+      ],
+      "description": "Retired campaign keywords",
+      "active": false,
+      "created_at": "2026-07-01T00:00:00.000Z",
+      "updated_at": "2026-07-01T00:00:00.000Z",
+      "deleted_at": null
+    }
+  ],
+  "total": 2,
+  "capacity": {
+    "used": 4,
+    "limit": 100,
+    "remaining": 96
+  }
+}

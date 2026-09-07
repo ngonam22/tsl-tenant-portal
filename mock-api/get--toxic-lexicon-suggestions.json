@@ -1,0 +1,16 @@
+[
+  {
+    "ngram": "óc chó",
+    "toxic_count": 4,
+    "clean_count": 0,
+    "example_post_ids": [
+      "threads:101"
+    ]
+  },
+  {
+    "ngram": "vô học",
+    "toxic_count": 2,
+    "clean_count": 0,
+    "example_post_ids": []
+  }
+]

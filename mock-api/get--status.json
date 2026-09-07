@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-06-29T00:00:00.000Z",
+  "services": {
+    "api": {
+      "status": "ok",
+      "detail": "process up"
+    },
+    "postgres": {
+      "status": "ok",
+      "detail": "",
+      "latency_ms": 2
+    },
+    "redis": {
+      "status": "ok",
+      "detail": "",
+      "latency_ms": 1
+    },
+    "consumer": {
+      "status": "ok",
+      "detail": "",
+      "lag": 0,
+      "pending": 0
+    },
+    "batch_jobs": {
+      "status": "degraded",
+      "detail": "last run 1200s ago"
+    },
+    "inference": {
+      "status": "ok",
+      "detail": "",
+      "mode": "live"
+    },
+    "collector": {
+      "status": "ok",
+      "detail": "",
+      "age_s": 5
+    }
+  },
+  "freshness": {
+    "windows": [
+      {
+        "window": "24h",
+        "last_computed_at": null,
+        "age_s": 120,
+        "scored_units": 17,
+        "gate_pass_rate": 0.8
+      },
+      {
+        "window": "7d",
+        "last_computed_at": null,
+        "age_s": 5400,
+        "scored_units": 42,
+        "gate_pass_rate": 0.65
+      }
+    ],
+    "topic_clusters": {
+      "total": 5,
+      "per_window": {
+        "24h": 5,
+        "7d": 9
+      }
+    },
+    "last_job_runs": [
+      {
+        "job_kind": "score",
+        "window": "24h",
+        "status": "ok",
+        "age_s": 120
+      }
+    ]
+  }
+}

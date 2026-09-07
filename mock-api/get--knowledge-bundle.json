@@ -1,0 +1,17 @@
+{
+  "knowledge_version": 4,
+  "next_version": 5,
+  "released_checksum": "d2a8e7515b2d2f31982fa6c195e80c34fa8e66bf640697f041e05ec8f78c5821",
+  "baseline_checksum": "d2a8e7515b2d2f31982fa6c195e80c34fa8e66bf640697f041e05ec8f78c5821",
+  "current_checksum": "bcbdb4f3677af650995798a228b087472efd961db6a2e23fd6d1df8d76e744a8",
+  "published_slice_changed": true,
+  "entity_count": 128,
+  "toxic_lexicon_count": 46,
+  "bundle_format": "tsl-knowledge-bundle",
+  "bundle_format_version": 1,
+  "compatibility": {
+    "app_contract": 1,
+    "database_contract": 1,
+    "model_contract": 1
+  }
+}

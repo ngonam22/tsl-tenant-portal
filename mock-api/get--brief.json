@@ -2,28 +2,55 @@
   "window": "24h",
   "status": "ready",
   "reason": null,
-  "as_of_ms": 1785287400000,
-  "source_as_of_ms": 1785287340000,
-  "generated_at": "2026-07-29T01:10:00.000Z",
-  "model_id": "snapshot-demo",
+  "as_of_ms": 1785506324290,
+  "source_as_of_ms": 1785506264290,
+  "generated_at": "2026-07-31T13:58:44.290Z",
+  "model_id": "qwen3:4b-instruct",
   "brief": {
-    "headline": "Thảo luận về chất lượng tăng trong khi một chủ đề tẩy chay đang lan rộng",
+    "headline": "Vinamilk recall chatter is climbing while a measles topic spreads broadly",
     "bullets": [
       {
         "trendable_unit_type": "entity",
-        "trendable_unit_id": "BRAND:demo",
-        "title": "Phản ánh về chất lượng đang tăng",
-        "why": "Lượng bài viết tiêu cực của dữ liệu minh hoạ tăng trong vài giờ gần nhất.",
-        "evidence": ["volume", "velocity", "sentiment"]
+        "trendable_unit_id": "BRAND:vinamilk",
+        "title": "Vinamilk recall complaints rising",
+        "why": "Negative posts about a product recall are accelerating in the last few hours.",
+        "evidence": [
+          "volume",
+          "velocity",
+          "sentiment"
+        ]
       },
       {
         "trendable_unit_type": "topic_cluster",
-        "trendable_unit_id": "demo-topic-boycott",
-        "title": "Thảo luận tẩy chay mở rộng",
-        "why": "Nhiều tác giả minh hoạ đang cùng thảo luận về một lời kêu gọi tẩy chay.",
-        "evidence": ["breadth", "engagement"]
+        "trendable_unit_id": "clus_measles_01",
+        "title": "Measles outbreak discussion widening",
+        "why": "Many distinct authors are posting about a measles outbreak across sources.",
+        "evidence": [
+          "breadth",
+          "engagement",
+          "sudden_new_key"
+        ]
       }
     ]
   },
-  "source_units": null
+  "source_units": [
+    {
+      "trendable_unit_type": "entity",
+      "trendable_unit_id": "BRAND:vinamilk",
+      "label": "vinamilk",
+      "score": 8.42,
+      "gate_passed": true,
+      "volume": 120.5,
+      "velocity": 3.1,
+      "engagement_total": 5400,
+      "sentiment": {
+        "pos": 0.1,
+        "neg": 0.72,
+        "neutral": 0.12,
+        "mixed": 0.06
+      },
+      "toxicity_pct": 0.18,
+      "distinct_authors": 47
+    }
+  ]
 }

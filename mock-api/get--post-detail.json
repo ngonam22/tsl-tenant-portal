@@ -1,0 +1,93 @@
+{
+  "post_id": "threads:1",
+  "provider": "threads",
+  "provider_post_id": "1",
+  "post_kind": "comment",
+  "text": "Full text of the post.",
+  "lang": "vi",
+  "media": null,
+  "engagement": {
+    "like_count": 10,
+    "comment_count": 2,
+    "share_count": 1
+  },
+  "provider_url": "https://www.threads.net/t/1",
+  "provenance": "scraper",
+  "matched_keywords": [
+    "alpha"
+  ],
+  "discovered_via": [
+    "keyword"
+  ],
+  "sentiment": {
+    "label": "neg",
+    "confidence": 0.8
+  },
+  "relevance": {
+    "label": "on_topic",
+    "confidence": 0.9
+  },
+  "content_types": [
+    {
+      "label": "opinion",
+      "confidence": 0.7
+    }
+  ],
+  "toxicity": {
+    "is_toxic": false,
+    "toxicity": 0.1,
+    "categories": []
+  },
+  "crisis": null,
+  "analysis_version": "v1",
+  "analyzed_at": "2026-01-01T00:05:00Z",
+  "deleted_at": null,
+  "created_at_ms": 1735689600000,
+  "observed_at_ms": null,
+  "entity_count": 3,
+  "analysis": {
+    "steps": {},
+    "done": 7,
+    "total": 7,
+    "complete": true,
+    "skipped": null
+  },
+  "author_display_name": "Nam Nguyen",
+  "adjudication": {
+    "sentiment": {
+      "overall": "neutral",
+      "sarcasm_candidate": false
+    },
+    "toxicity": {
+      "level": "none",
+      "target_type": "none",
+      "attack_intent": false
+    },
+    "meta": {
+      "evidence_quotes": [
+        "alpha"
+      ],
+      "confidence": 0.8,
+      "needs_human_review": false
+    }
+  },
+  "llm_routing": {
+    "escalated": true,
+    "outcome": "applied",
+    "triggers": [
+      "humor"
+    ]
+  },
+  "knn": null,
+  "verdict": {
+    "sentiment": {
+      "label": "neg",
+      "source": "model",
+      "confidence": 0.8,
+      "review_reasons": []
+    }
+  },
+  "skipped": null,
+  "human_labels": [],
+  "human_label": null
+}

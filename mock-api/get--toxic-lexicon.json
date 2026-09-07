@@ -1,0 +1,32 @@
+[
+  {
+    "id": "lx1",
+    "term": "đồ ngu",
+    "normalized_term": "đồ ngu",
+    "category": "offensive",
+    "match_type": "phrase",
+    "action": "toxic_signal",
+    "source": "human",
+    "enabled": true,
+    "added_by": "admin-ops",
+    "note": null,
+    "distribution_state": "private",
+    "created_at": "2026-07-01T00:00:00.000Z",
+    "updated_at": "2026-07-01T00:00:00.000Z"
+  },
+  {
+    "id": "lx2",
+    "term": "gà mờ",
+    "normalized_term": "gà mờ",
+    "category": "harassment",
+    "match_type": "whole_word",
+    "action": "review_only",
+    "source": "seed",
+    "enabled": false,
+    "added_by": null,
+    "note": "teencode",
+    "distribution_state": "published",
+    "created_at": "2026-07-01T00:00:00.000Z",
+    "updated_at": "2026-07-01T00:00:00.000Z"
+  }
+]

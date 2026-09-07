@@ -1,0 +1,52 @@
+{
+  "similar": [
+    {
+      "post_id": "threads:i09-s1",
+      "similarity": 0.92,
+      "provider": "threads",
+      "provider_url": null,
+      "post_kind": "comment",
+      "lang": "vi",
+      "created_at_ms": 1735689600000,
+      "text_preview": "most similar post",
+      "sentiment_label": "neu",
+      "toxic": false,
+      "engagement": {
+        "like_count": 5,
+        "comment_count": 1
+      }
+    },
+    {
+      "post_id": "threads:i09-s2",
+      "similarity": 0.81,
+      "provider": "threads",
+      "provider_url": null,
+      "post_kind": "comment",
+      "lang": "vi",
+      "created_at_ms": 1735689600000,
+      "text_preview": "similar post",
+      "sentiment_label": "neu",
+      "toxic": false,
+      "engagement": {
+        "like_count": 5,
+        "comment_count": 1
+      }
+    },
+    {
+      "post_id": "threads:i09-s3",
+      "similarity": 0.55,
+      "provider": "threads",
+      "provider_url": null,
+      "post_kind": "comment",
+      "lang": "vi",
+      "created_at_ms": 1735689600000,
+      "text_preview": "similar post",
+      "sentiment_label": "neu",
+      "toxic": false,
+      "engagement": {
+        "like_count": 5,
+        "comment_count": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+[
+  {
+    "post_id": "threads:101",
+    "provider_url": "https://www.threads.net/t/101",
+    "task": "sentiment",
+    "text_preview": "Sentiment review post — the models disagreed.",
+    "verdict": {
+      "label": "neutral",
+      "source": "model",
+      "confidence": 0.55,
+      "review_reasons": [
+        "low_confidence",
+        "model_disagreement"
+      ],
+      "contributions": [
+        {
+          "signal": "model",
+          "label": "neutral",
+          "confidence": 0.55
+        },
+        {
+          "signal": "knn",
+          "label": "neg"
+        }
+      ]
+    },
+    "review_reasons": [
+      "low_confidence",
+      "model_disagreement"
+    ],
+    "llm_routing": {
+      "model_sentiment": {
+        "label": "neutral",
+        "confidence": 0.55
+      },
+      "escalated": true,
+      "llm_sentiment": "neg"
+    },
+    "engagement_total": 120
+  },
+  {
+    "post_id": "threads:102",
+    "provider_url": null,
+    "task": "toxicity",
+    "text_preview": "Toxicity review post — memory flags toxic.",
+    "verdict": {
+      "label": "toxic",
+      "source": "model",
+      "confidence": 0.4,
+      "is_toxic": true,
+      "review_reasons": [
+        "missed_toxicity"
+      ],
+      "contributions": [
+        {
+          "signal": "model",
+          "label": "clean",
+          "confidence": 0.4
+        },
+        {
+          "signal": "knn",
+          "label": "toxic"
+        },
+        {
+          "signal": "lexicon",
+          "label": "toxic"
+        }
+      ]
+    },
+    "review_reasons": [
+      "missed_toxicity"
+    ],
+    "llm_routing": null,
+    "engagement_total": 90
+  }
+]

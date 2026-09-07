@@ -1,0 +1,18 @@
+{
+  "edges": [
+    {
+      "src": "Alpha Brand",
+      "src_type": "BRAND",
+      "dst": "Beta Org",
+      "dst_type": "ORG",
+      "weight": 142
+    },
+    {
+      "src": "Gamma Person",
+      "src_type": "BRAND",
+      "dst": "Alpha Brand",
+      "dst_type": "ORG",
+      "weight": 88
+    }
+  ]
+}

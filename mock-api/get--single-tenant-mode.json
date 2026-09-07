@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "customer_tenant_count": 2,
+  "can_create_customer_tenant": true,
+  "create_blocked_reason": null,
+  "can_enable": false,
+  "enable_blocked_reason": "Single-tenant mode permits only one customer Tenant on this deployment, but 2 already exist."
+}

@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "user_id": "demo-tenant-user-1",
+      "email": "marketing.admin@vinamilk.demo",
+      "display_name": "Marketing Admin",
+      "status": "active",
+      "locked_until": null,
+      "failed_login_count": 0,
+      "last_login_at": "2026-09-07T00:45:00.000Z"
+    },
+    {
+      "user_id": "demo-tenant-user-2",
+      "email": "social.listener@vinamilk.demo",
+      "display_name": "Social Listening Team",
+      "status": "active",
+      "locked_until": null,
+      "failed_login_count": 1,
+      "last_login_at": "2026-09-06T09:20:00.000Z"
+    },
+    {
+      "user_id": "demo-tenant-user-3",
+      "email": "agency.viewer@vinamilk.demo",
+      "display_name": "Agency Viewer",
+      "status": "locked",
+      "locked_until": "2026-09-07T03:00:00.000Z",
+      "failed_login_count": 5,
+      "last_login_at": "2026-09-01T04:10:00.000Z"
+    }
+  ],
+  "total": 3,
+  "limit": 50,
+  "offset": 0
+}

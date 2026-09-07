@@ -1,0 +1,23 @@
+{
+  "assigned": true,
+  "entitlement": {
+    "tenantId": "t-1",
+    "entitlementRevision": "1",
+    "packageKey": "v1-single",
+    "packageRevision": "1",
+    "publicPackageLabel": "v1-single",
+    "effectiveAt": "2026-07-01T00:00:00.000Z",
+    "quotaDayUtc": "2026-07-31",
+    "collectionRunLimitPerUtcDay": 500,
+    "maxKeywords": 1000
+  },
+  "assignablePackages": [
+    {
+      "packageKey": "v1-single",
+      "packageRevision": "1",
+      "publicPackageLabel": "v1-single",
+      "collectionRunLimitPerUtcDay": 500,
+      "maxKeywords": 1000
+    }
+  ]
+}

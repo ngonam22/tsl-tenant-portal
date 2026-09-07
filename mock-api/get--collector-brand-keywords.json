@@ -1,0 +1,24 @@
+{
+  "keywords": [
+    "acme",
+    "acme corp"
+  ],
+  "termToBrands": {
+    "acme": [
+      "brand-1"
+    ],
+    "acme corp": [
+      "brand-1"
+    ]
+  },
+  "brands": {
+    "brand-1": {
+      "name": "Acme",
+      "keywords": [
+        "acme",
+        "acme corp"
+      ],
+      "active": true
+    }
+  }
+}
