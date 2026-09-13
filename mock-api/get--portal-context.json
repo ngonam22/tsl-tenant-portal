@@ -1,25 +1,29 @@
 {
   "tenant": {
-    "tenant_id": "dddddddd-0000-4000-8000-00000000000d",
-    "name": "Minh An Dairy",
+    "tenant_id": "f40a1730-c4d3-4997-ab0e-a0fe82d73dce",
+    "name": "Vinamilk Test",
     "logo_url": null,
-    "default_locale": "vi"
+    "default_locale": "vi",
+    "status": "active"
   },
   "actor": {
-    "subject": "demo-user",
+    "subject": "d8e8d994-aeba-4522-8789-0e6c636e73fa",
     "type": "tenant_operator",
-    "display_name": "Demo operator",
-    "email": "tenant-demo@invalid.example"
+    "display_name": "Vinamilk AM",
+    "email": "tenant-a@tsl.local"
   },
   "permissions": [
-    "watchlist.view",
-    "crisis.view",
-    "crisis.triage",
     "alert.view",
     "analysis.view",
-    "usage.view"
+    "crisis.view",
+    "member.view",
+    "usage.view",
+    "watchlist.view"
   ],
-  "support": { "account_managers": [], "general_email": null },
-  "context_version": "demo",
-  "fetched_at": "2026-07-31T00:00:00.000Z"
+  "support": {
+    "account_managers": [],
+    "general_email": null
+  },
+  "context_version": "d24b39bf710a0769d7ac56f24713ecab",
+  "fetched_at": "2026-09-13T04:08:58.455Z"
 }

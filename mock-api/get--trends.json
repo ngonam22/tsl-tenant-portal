@@ -1,80 +1,58 @@
 {
   "trends": [
     {
-      "trendable_unit_id": "topic:1",
       "trendable_unit_type": "topic_cluster",
-      "label": "Alpha trend",
+      "trendable_unit_id": "demo-topic-quality",
+      "label": "Quan ngại về chất lượng sản phẩm",
+      "trend_score": 8.42,
       "gate_passed": true,
-      "trend_score": 9,
-      "volume": 90,
-      "velocity": 4.5,
-      "post_count": 12,
-      "engagement_total": 36,
+      "volume": 126,
+      "velocity": 3.1,
+      "engagement_total": 5420,
       "sentiment_dist": {
-        "pos": 6,
-        "neg": 2,
-        "neutral": 1,
-        "mixed": 1
+        "pos": 0.1,
+        "neg": 0.72,
+        "neutral": 0.12,
+        "mixed": 0.06
       },
-      "toxicity_pct": 0.05,
-      "distinct_authors": 7
+      "toxicity_pct": 12.3,
+      "distinct_authors": 47
     },
     {
-      "trendable_unit_id": "topic:2",
       "trendable_unit_type": "topic_cluster",
-      "label": "Beta trend",
+      "trendable_unit_id": "demo-topic-boycott",
+      "label": "Lời kêu gọi tẩy chay",
+      "trend_score": 7.15,
       "gate_passed": true,
-      "trend_score": 8,
-      "volume": 80,
-      "velocity": 4,
-      "post_count": 11,
-      "engagement_total": 32,
+      "volume": 84,
+      "velocity": 2.4,
+      "engagement_total": 3180,
       "sentiment_dist": {
-        "pos": 6,
-        "neg": 2,
-        "neutral": 1,
-        "mixed": 1
+        "pos": 0.08,
+        "neg": 0.76,
+        "neutral": 0.11,
+        "mixed": 0.05
       },
-      "toxicity_pct": 0.05,
-      "distinct_authors": 7
+      "toxicity_pct": 9.8,
+      "distinct_authors": 34
     },
     {
-      "trendable_unit_id": "topic:3",
       "trendable_unit_type": "topic_cluster",
-      "label": "Gamma trend",
-      "gate_passed": false,
-      "trend_score": 3,
-      "volume": 30,
-      "velocity": 1.5,
-      "post_count": 10,
-      "engagement_total": 12,
+      "trendable_unit_id": "demo-topic-support",
+      "label": "Trải nghiệm hỗ trợ khách hàng",
+      "trend_score": 5.63,
+      "gate_passed": true,
+      "volume": 52,
+      "velocity": 1.4,
+      "engagement_total": 1460,
       "sentiment_dist": {
-        "pos": 6,
-        "neg": 2,
-        "neutral": 1,
-        "mixed": 1
+        "pos": 0.22,
+        "neg": 0.51,
+        "neutral": 0.21,
+        "mixed": 0.06
       },
-      "toxicity_pct": 0.05,
-      "distinct_authors": 7
-    },
-    {
-      "trendable_unit_id": "topic:4",
-      "trendable_unit_type": "topic_cluster",
-      "label": "Delta trend",
-      "gate_passed": false,
-      "trend_score": 2,
-      "volume": 20,
-      "velocity": 1,
-      "post_count": 9,
-      "engagement_total": 8,
-      "sentiment_dist": {
-        "pos": 6,
-        "neg": 2,
-        "neutral": 1,
-        "mixed": 1
-      },
-      "toxicity_pct": 0.05,
-      "distinct_authors": 7
+      "toxicity_pct": 4.1,
+      "distinct_authors": 21
     }
   ],
   "next_cursor": null

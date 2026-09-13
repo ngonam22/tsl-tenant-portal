@@ -1,123 +1,85 @@
 {
   "items": [
     {
-      "post_id": "threads:1",
+      "post_id": "demo-thread-001",
       "provider": "threads",
-      "provider_url": "https://www.threads.net/t/1",
-      "text_preview": "Alpha post text",
-      "post_kind": "comment",
-      "lang": "vi",
-      "created_at_ms": 1735689600000,
-      "analyzed": true,
-      "analyzed_at": "2026-01-01T00:05:00Z",
-      "sentiment_label": "neg",
-      "toxic": false,
-      "matched_keywords": [],
-      "engagement": {
-        "like_count": 10,
-        "share_count": 2,
-        "comment_count": 1
-      },
-      "llm_routed": true,
-      "llm_outcome": "applied",
-      "skipped": null,
-      "analysis": {
-        "steps": {},
-        "done": 7,
-        "total": 7,
-        "complete": true,
-        "skipped": null
-      }
-    },
-    {
-      "post_id": "threads:2",
-      "provider": "threads",
-      "provider_url": "https://www.threads.net/t/2",
-      "text_preview": "Beta post text",
+      "provider_url": null,
+      "text_preview": "Bài viết minh hoạ đề cập đến trải nghiệm chất lượng sản phẩm gần đây.",
       "post_kind": "post",
       "lang": "vi",
-      "created_at_ms": 1735689600000,
+      "created_at_ms": 1785285600000,
       "analyzed": true,
-      "analyzed_at": "2026-01-01T00:05:00Z",
+      "analyzed_at": "2026-07-29T00:41:00.000Z",
+      "analysis_version": "demo-v1",
       "sentiment_label": "neg",
       "toxic": false,
-      "matched_keywords": [],
-      "engagement": {
-        "like_count": 10,
-        "share_count": 2,
-        "comment_count": 1
-      },
-      "llm_routed": true,
-      "llm_outcome": "applied",
+      "matched_keywords": ["thương hiệu mẫu"],
+      "engagement": null,
+      "llm_routed": false,
+      "llm_outcome": null,
       "skipped": null,
       "analysis": {
         "steps": {},
-        "done": 7,
-        "total": 7,
+        "done": 4,
+        "total": 4,
         "complete": true,
         "skipped": null
       }
     },
     {
-      "post_id": "threads:3",
+      "post_id": "demo-thread-002",
       "provider": "threads",
-      "provider_url": "https://www.threads.net/t/3",
-      "text_preview": "Gamma post text",
-      "post_kind": "post",
-      "lang": "vi",
-      "created_at_ms": 1735689600000,
-      "analyzed": true,
-      "analyzed_at": "2026-01-01T00:05:00Z",
-      "sentiment_label": "neg",
-      "toxic": false,
-      "matched_keywords": [],
-      "engagement": {
-        "like_count": 10,
-        "share_count": 2,
-        "comment_count": 1
-      },
-      "llm_routed": true,
-      "llm_outcome": "applied",
-      "skipped": null,
-      "analysis": {
-        "steps": {},
-        "done": 7,
-        "total": 7,
-        "complete": true,
-        "skipped": null
-      }
-    },
-    {
-      "post_id": "threads:4",
-      "provider": "threads",
-      "provider_url": "https://www.threads.net/t/4",
-      "text_preview": "Delta post text",
+      "provider_url": null,
+      "text_preview": "Bài viết minh hoạ thảo luận về tốc độ phản hồi của đội ngũ hỗ trợ.",
       "post_kind": "reply",
       "lang": "vi",
-      "created_at_ms": 1735689600000,
+      "created_at_ms": 1785282900000,
       "analyzed": true,
-      "analyzed_at": "2026-01-01T00:05:00Z",
-      "sentiment_label": "neg",
+      "analyzed_at": "2026-07-28T23:56:00.000Z",
+      "analysis_version": "demo-v1",
+      "sentiment_label": "neutral",
       "toxic": false,
-      "matched_keywords": [],
-      "engagement": {
-        "like_count": 10,
-        "share_count": 2,
-        "comment_count": 1
-      },
-      "llm_routed": true,
-      "llm_outcome": "applied",
+      "matched_keywords": ["hỗ trợ khách hàng"],
+      "engagement": null,
+      "llm_routed": false,
+      "llm_outcome": null,
       "skipped": null,
       "analysis": {
         "steps": {},
-        "done": 7,
-        "total": 7,
+        "done": 4,
+        "total": 4,
+        "complete": true,
+        "skipped": null
+      }
+    },
+    {
+      "post_id": "demo-thread-003",
+      "provider": "threads",
+      "provider_url": null,
+      "text_preview": "Bài viết minh hoạ ghi nhận phản hồi tích cực về một cải tiến mới.",
+      "post_kind": "post",
+      "lang": "vi",
+      "created_at_ms": 1785278400000,
+      "analyzed": true,
+      "analyzed_at": "2026-07-28T22:41:00.000Z",
+      "analysis_version": "demo-v1",
+      "sentiment_label": "pos",
+      "toxic": false,
+      "matched_keywords": ["sản phẩm mẫu"],
+      "engagement": null,
+      "llm_routed": false,
+      "llm_outcome": null,
+      "skipped": null,
+      "analysis": {
+        "steps": {},
+        "done": 4,
+        "total": 4,
         "complete": true,
         "skipped": null
       }
     }
   ],
-  "total": 4,
+  "total": 3,
   "page": 1,
-  "limit": 25
+  "limit": 20
 }

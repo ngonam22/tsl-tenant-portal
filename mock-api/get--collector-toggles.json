@@ -1,9 +1,0 @@
-{
-  "toggles": [
-    {
-      "axis": "strategy",
-      "name": "author-scan",
-      "enabled": false
-    }
-  ]
-}

@@ -1,14 +1,19 @@
 {
-  "percent_used": 72,
-  "upsell": false,
-  "per_keyword": [
-    {
-      "keyword": "thương hiệu mẫu",
-      "percent_used": 64
-    },
-    {
-      "keyword": "hỗ trợ khách hàng",
-      "percent_used": 41
-    }
-  ]
+  "tenant_id": "f40a1730-c4d3-4997-ab0e-a0fe82d73dce",
+  "data_path": "single",
+  "unit": "collection_run",
+  "package_label": null,
+  "used": 40,
+  "limit": 500,
+  "remaining": 460,
+  "percent_used": 8,
+  "state": "normal",
+  "quota_day": "2026-09-13",
+  "period_start": "2026-09-13T00:00:00.000Z",
+  "resets_at": "2026-09-14T00:00:00.000Z",
+  "posts_collected_in_period": 713,
+  "posts_counting_basis": "collector_reported_deliveries",
+  "as_of": "2026-09-13T04:08:58.459Z",
+  "freshness_seconds": 1735,
+  "unavailable_reason": null
 }

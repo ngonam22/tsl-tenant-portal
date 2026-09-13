@@ -1,16 +1,32 @@
 {
-  "clusters": [
+  "items": [
     {
-      "id": "demo-watchlist-brand",
-      "name": "Thương hiệu chính",
-      "terms": ["thương hiệu mẫu", "sản phẩm mẫu"],
-      "active": true
-    },
-    {
-      "id": "demo-watchlist-service",
-      "name": "Trải nghiệm dịch vụ",
-      "terms": ["hỗ trợ khách hàng", "chăm sóc khách hàng"],
-      "active": true
+      "cluster_id": "0dd84869-7e07-4c6e-a84c-947b19e59b0b",
+      "tenant_id": "f40a1730-c4d3-4997-ab0e-a0fe82d73dce",
+      "name": "trong tam",
+      "terms": [
+        "vinamilk",
+        "sữa đặc ông thọ",
+        "ngôi sao phương nam",
+        "vinamilk gtp",
+        "vinamilk 50",
+        "lifeatvinamilk",
+        "tin đồn vinamilk",
+        "tay chay vinamilk",
+        "sữa giả",
+        "th truemilk"
+      ],
+      "description": null,
+      "active": true,
+      "created_at": "2026-08-20T08:19:13.238Z",
+      "updated_at": "2026-08-20T08:19:13.238Z",
+      "deleted_at": null
     }
-  ]
+  ],
+  "total": 1,
+  "capacity": {
+    "used": 10,
+    "limit": 1000,
+    "remaining": 990
+  }
 }

@@ -1,16 +1,18 @@
 {
   "actor": {
-    "subject": "demo-user",
+    "subject": "d8e8d994-aeba-4522-8789-0e6c636e73fa",
     "type": "tenant_operator",
-    "display_name": "Demo operator",
-    "email": "tenant-demo@invalid.example"
+    "display_name": "Vinamilk AM",
+    "email": "tenant-a@tsl.local"
   },
   "contexts": [
     {
-      "tenant_id": "dddddddd-0000-4000-8000-00000000000d",
-      "name": "Minh An Dairy",
+      "tenant_id": "f40a1730-c4d3-4997-ab0e-a0fe82d73dce",
       "logo_url": null,
-      "default_locale": "vi"
+      "name": "Vinamilk Test",
+      "default_locale": "vi",
+      "status": "active",
+      "context_version": "2026-08-20T08:15:43.342Z"
     }
   ]
 }

@@ -1,0 +1,1 @@
+import{e as t,j as s,y as c}from"./index-C4f2PJz9.js";const p=t.forwardRef(function({className:r,...e},o){return s.jsx("input",{type:"checkbox",ref:o,className:c("accent-primary border-input h-4 w-4 rounded-sm border",r),...e})});export{p as C};
