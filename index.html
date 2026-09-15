@@ -1,18 +1,511 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <!--
-      The literal fallback MUST equal PORTAL_TITLE_FALLBACK in src/lib/portal-config.ts, so the first
-      paint never exposes an unresolved environment placeholder (PRD §7.1). A custom
-      VITE_PORTAL_TITLE replaces it as soon as the bundle boots.
-    -->
-    <title>Tenant Portal</title>
-    <script type="module" crossorigin src="./assets/index-C4f2PJz9.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BFCbUnad.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tsl · Community Insight — v8 (legal-safe)</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --font:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --ink:#101828;--muted:#667085;--muted2:#98a2b3;--line:#eef1f5;
+    --bg:#f9fafb;--sb-bg:#f8f8f8;--card:#ffffff;
+    --accent:#465fff;--accent-bg:#eef1ff;
+    --fav:#17b26a;--fav-bg:#ecfdf5;
+    --watch:#f04438;--watch-bg:#fef3f2;
+    --neu:#667085;--neu-bg:#f2f4f7;
+    --mix:#b54708;--mix-bg:#fffaeb;
+    --r-card:22px;--r-pill:20px;--r-nav:14px;
+    --shadow-card:0 1px 2px rgba(16,24,40,.04),0 4px 14px rgba(16,24,40,.06);
+    --shadow-nav:0 1px 2px rgba(16,24,40,.06),0 1px 4px rgba(16,24,40,.08);
+    --fav-solid:#17b26a;--watch-solid:#f04438;--neu-solid:#98a2b3;--mix-solid:#f79009;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+  .shell{display:flex;min-height:100vh}
+  .sidebar{width:256px;background:var(--sb-bg);border-right:1px solid #eeeeee;padding:22px 18px 18px;flex-shrink:0;position:fixed;height:100vh;overflow-y:auto}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:4px;padding:0 6px}
+  .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#7c8bff);box-shadow:0 3px 8px rgba(70,95,255,.35)}
+  .brand b{font-size:.95rem;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+  .sub{font-size:.66rem;color:var(--muted2);margin:0 0 18px 40px;font-weight:600;letter-spacing:.02em}
+  .navlbl{font-size:.62rem;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin:16px 0 7px 10px}
+  .nav-btn{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:none;color:#475467;padding:9px 12px;border-radius:var(--r-nav);cursor:pointer;font-size:.845rem;font-weight:600;margin-bottom:2px;transition:background .15s ease,color .15s ease,box-shadow .15s ease}
+  .nav-btn svg{width:18px;height:18px;flex-shrink:0;color:#98a2b3;transition:color .15s ease}
+  .nav-btn.active{background:#fff;color:var(--accent);font-weight:700;box-shadow:var(--shadow-nav)}
+  .nav-btn.active svg{color:var(--accent)}
+  .nav-btn:hover:not(.active){background:rgba(16,24,40,.045)}
+  .newtag{background:var(--accent);color:#fff;font-size:.54rem;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:auto;letter-spacing:.02em}
+  .entag{background:var(--mix);color:#fff;font-size:.54rem;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:auto;letter-spacing:.02em}
+  .enterprise-lock{position:relative}
+  .enterprise-lock-content{filter:blur(5px);pointer-events:none;user-select:none}
+  .enterprise-lock-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;background:linear-gradient(180deg,rgba(249,250,251,.35),rgba(249,250,251,.78));border-radius:16px}
+  .enterprise-lock-badge{display:inline-flex;align-items:center;gap:8px;background:var(--mix);color:#fff;font-size:.82rem;font-weight:700;padding:11px 20px;border-radius:30px;box-shadow:0 6px 18px rgba(181,71,8,.28);letter-spacing:.01em}
+  .enterprise-lock-badge svg{width:16px;height:16px;flex-shrink:0}
+  .main{margin-left:256px;flex:1}
+  .topbar{display:flex;align-items:center;padding:15px 32px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:30}
+  .topbar .t{color:var(--muted);font-size:.85rem;font-weight:600}
+  .pill{margin-left:auto;background:var(--accent-bg);color:var(--accent);font-size:.72rem;font-weight:700;padding:5px 13px;border-radius:20px}
+  .body{padding:26px 32px}
+  .ph{margin-bottom:18px}.ph h1{font-size:1.4rem;font-weight:800;letter-spacing:-.02em}.ph p{color:var(--muted);font-size:.83rem;margin-top:4px}
+  .controls{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+  .sel{border:1px solid var(--line);background:#fff;border-radius:11px;padding:8px 12px;font-size:.82rem;color:var(--ink);cursor:pointer;font-family:var(--font)}
+  .tb-note{font-size:.72rem;color:var(--muted2);margin-left:auto;font-weight:600}
+  .search-wrap{position:relative;flex:1;min-width:200px}
+  .search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted2)}
+  .search{width:100%;border:1px solid var(--line);border-radius:11px;padding:9px 12px 9px 36px;font-size:.85rem;font-family:var(--font);background:#fff}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:17px 18px;box-shadow:var(--shadow-card)}
+  .kpi-l{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted2);margin-bottom:7px;font-weight:700}
+  .kpi-v{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+  .kpi-d{font-size:.72rem;margin-top:6px;font-weight:700}
+  .up{color:var(--fav)}.down{color:var(--watch)}.flat{color:var(--muted2)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:20px;margin-bottom:16px;box-shadow:var(--shadow-card)}
+  .st{font-size:.95rem;font-weight:800;margin-bottom:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;letter-spacing:-.01em}
+  .sc{font-size:.76rem;color:var(--muted);margin-bottom:15px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:1000px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+
+  .crisis{background:var(--watch-bg);border:1px solid rgba(240,68,56,.18);border-left:4px solid var(--watch);border-radius:var(--r-card);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px}
+  .crisis .ic{width:22px;height:22px;color:var(--watch);flex-shrink:0}
+  .crisis .ic svg{width:22px;height:22px}
+  .crisis b{color:#7a271a}
+  .crisis .txt{font-size:.8rem;color:#7a271a;line-height:1.45}
+  .crisis .go{margin-left:auto;background:var(--watch);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:.76rem;cursor:pointer;white-space:nowrap;font-family:var(--font)}
+
+  table{width:100%;border-collapse:collapse}
+  th{font-size:.66rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted2);padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-weight:700}
+  td{padding:11px 10px;border-bottom:1px solid var(--line);font-size:.85rem;vertical-align:middle}
+  tr:last-child td{border-bottom:none}tr:hover td{background:#fbfbfc}
+  .mini{font-size:.66rem;color:var(--muted2);margin-top:2px;font-weight:600}
+  .etype{font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px}
+  .e-brand{background:var(--accent-bg);color:var(--accent)}.e-org{background:var(--fav-bg);color:var(--fav)}.e-person{background:var(--mix-bg);color:var(--mix)}.e-hash{background:var(--neu-bg);color:var(--neu)}
+  .risk{display:inline-block;background:rgba(240,68,56,.12);color:#d92d20;border:1px solid rgba(240,68,56,.22);font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:7px}
+
+  /* tông thảo luận (legal-safe) — pill + dot, matches the reference portal's sentiment pill component */
+  .tone{display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 9px;border-radius:var(--r-pill);font-size:.71rem;font-weight:700;white-space:nowrap}
+  .tone::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+  .t-fav{background:var(--fav-bg);color:var(--fav)}.t-watch{background:var(--watch-bg);color:var(--watch)}.t-neu{background:var(--neu-bg);color:var(--neu)}
+  .sbar{display:flex;height:8px;border-radius:20px;overflow:hidden;width:150px;min-width:120px}
+  .sbar>span{height:8px}
+  .sleg{font-size:.64rem;color:var(--muted2);margin-top:4px;font-weight:600}
+  .disc{font-size:.7rem;color:var(--muted2);font-style:italic;margin-top:9px}
+
+  .page{display:none}.page.active{display:block}
+  .comention{display:inline-block;background:var(--neu-bg);color:#475467;border-radius:var(--r-pill);padding:4px 11px;font-size:.72rem;font-weight:600;margin:3px 4px 0 0}
+  .top5{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .top5:last-child{border-bottom:none}
+  .rk{font-size:1.2rem;font-weight:800;color:#d0d5dd;width:26px}.rk.hot{color:var(--watch)}
+  .bar{background:var(--neu-bg);border-radius:20px;height:7px;overflow:hidden;margin-top:5px}.bar>div{height:7px;border-radius:20px}
+
+  /* posts */
+  .post{padding:15px 0;border-bottom:1px solid var(--line)}
+  .post:last-child{border-bottom:none}
+  .post-h{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+  .ava{width:28px;height:28px;border-radius:50%;background:#fff;border:1px solid var(--line);box-shadow:0 1px 2px rgba(16,24,40,.06);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.66rem}
+  .post-h .hn{font-weight:700;font-size:.82rem}.post-h .tm{font-size:.7rem;color:var(--muted2);font-weight:600}
+  .post-txt{font-size:.86rem;color:#344054;line-height:1.6;margin-bottom:8px}
+  .post-m{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.72rem;color:var(--muted2)}
+
+  .lang-switch{position:fixed;left:20px;bottom:20px;z-index:60;display:flex;background:#fff;border:1px solid var(--line);border-radius:30px;padding:3px;box-shadow:0 4px 16px rgba(16,24,40,.12)}
+  .lang-btn{border:none;background:none;font-family:var(--font);font-size:.74rem;font-weight:700;color:#98a2b3;padding:6px 14px;border-radius:26px;cursor:pointer;letter-spacing:.02em;transition:background .15s ease,color .15s ease}
+  .lang-btn.active{background:var(--accent);color:#fff}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand"><div class="logo"></div><b>Brand A</b></div>
+  <p class="sub">Social Listening · Threads</p>
+  <div class="navlbl" data-i18n="sidebar.follow">Theo dõi</div>
+  <button class="nav-btn active" onclick="go('overview',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5" rx="1"/><rect x="12" y="9" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg><span data-i18n="nav.overview">Tổng quan</span> <span class="newtag" data-i18n="badge.new">MỚI</span></button>
+  <button class="nav-btn" onclick="go('trends',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/></svg><span data-i18n="nav.trends">Xu hướng</span></button>
+  <button class="nav-btn" onclick="go('entities',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6a2 2 0 0 0-1.4-.6H4a2 2 0 0 0-2 2v7.2c0 .5.2 1 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg><span data-i18n="nav.entities">Thực thể</span></button>
+  <button class="nav-btn" onclick="go('competitors',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span data-i18n="nav.competitors">Cạnh tranh</span> <span class="entag">Enterprise</span></button>
+  <button class="nav-btn" onclick="go('posts',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6.8A1.8 1.8 0 0 0 5 3.8v16.4A1.8 1.8 0 0 0 6.8 22h10.4a1.8 1.8 0 0 0 1.8-1.8V7z"/><path d="M14 2v4.2a1.8 1.8 0 0 0 1.8 1.8H20"/><path d="M9 13h6"/><path d="M9 17h6"/></svg><span data-i18n="nav.posts">Bài viết</span></button>
+  <button class="nav-btn" onclick="go('crisis',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 3.9 2.5 18a1.8 1.8 0 0 0 1.5 2.7h16a1.8 1.8 0 0 0 1.5-2.7L13.4 3.9a1.8 1.8 0 0 0-2.8 0Z"/><path d="M12 9.5v4"/><path d="M12 17h.01"/></svg><span data-i18n="nav.crisis">Khủng hoảng</span></button>
+  <div class="navlbl" data-i18n="sidebar.config">Cấu hình</div>
+  <button class="nav-btn" onclick="go('cfgtenant',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="11" height="18" rx="1"/><path d="M16 21h3.5a1 1 0 0 0 1-1V10.5a1 1 0 0 0-1-1H16"/><path d="M9 7h3"/><path d="M9 11h3"/><path d="M9 15h3"/></svg><span data-i18n="nav.cfgtenant">Tenant</span></button>
+  <button class="nav-btn" onclick="go('cfgcollect',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 12 15.5 12 13.7 14.8 10.3 14.8 8.5 12 3 12"/><path d="M5.3 4.9 2 12v6.2a1.8 1.8 0 0 0 1.8 1.8h16.4a1.8 1.8 0 0 0 1.8-1.8V12l-3.3-7.1a1.8 1.8 0 0 0-1.6-1H6.9a1.8 1.8 0 0 0-1.6 1Z"/></svg><span data-i18n="nav.cfgcollect">Thu thập</span></button>
+  <button class="nav-btn" onclick="go('cfgusage',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12.5 2 4 14 11 14 10.5 22 19 10 12 10 12.5 2"/></svg><span data-i18n="nav.cfgusage">Mức sử dụng</span></button>
+  <button class="nav-btn" onclick="go('cfgaccount',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></svg><span data-i18n="nav.cfgaccount">Tài khoản</span></button>
+</aside>
+
+<main class="main">
+  <div class="topbar"><span class="t" data-i18n="topbar.title">Bảng điều khiển · Community Insight</span><span class="pill">V 1.0.0</span></div>
+  <div class="body">
+    <div class="controls" id="periodControls">
+      <span style="font-size:.72rem;color:#9aa1ad;text-transform:uppercase;letter-spacing:.4px" data-i18n="ctrl.period">Kỳ</span>
+      <select class="sel" id="win"><option data-i18n="opt.24h">24h</option><option selected data-i18n="opt.7d">7 ngày</option><option data-i18n="opt.30d">30 ngày</option><option data-i18n="opt.90d">90 ngày</option></select>
+      <span class="tb-note" data-i18n="topbar.note">cập nhật 4 phút trước · tenant demo</span>
+    </div>
+
+  <!-- ===== TỔNG QUAN ===== -->
+  <div id="p-overview" class="page active">
+    <div class="ph"><h1 data-i18n="ov.h1">Tổng quan</h1><p data-i18n="ov.p">Bức tranh nhanh trong kỳ (thay cho "Báo cáo ngày" chỉ có text).</p></div>
+    <div class="crisis">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.6 3.9 2.5 18a1.8 1.8 0 0 0 1.5 2.7h16a1.8 1.8 0 0 0 1.5-2.7L13.4 3.9a1.8 1.8 0 0 0-2.8 0Z"/><path d="M12 9.5v4"/><path d="M12 17h.01"/></svg></span>
+      <div><b data-i18n="ov.crisisLabel">1 chủ đề cần chú ý đang hoạt động:</b> <span class="txt" data-i18n-html="ov.crisisText"><b>Product recall</b> quanh <b>Alpha Brand</b> — 60% bài được phân loại "cần chú ý" và đang tăng.</span></div>
+      <button class="go" onclick="go('crisis',document.querySelectorAll('.nav-btn')[5])" data-i18n="ov.crisisBtn">Xem chi tiết →</button>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.totalPosts">Tổng bài đăng</div><div class="kpi-v">3,240</div><div class="kpi-d up" data-i18n="kpi.totalPostsDelta">▲ 18% vs kỳ trước</div></div>
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.totalEng">Tổng tương tác</div><div class="kpi-v">128K</div><div class="kpi-d up">▲ 22%</div></div>
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.trackedEnt">Thực thể theo dõi</div><div class="kpi-v">86</div><div class="kpi-d flat">5 Brand · 3 Org · 12 Person</div></div>
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.watchTopics">Chủ đề cần chú ý</div><div class="kpi-v">2</div><div class="kpi-d down" data-i18n="kpi.watchTopicsDelta">1 vượt ngưỡng cảnh báo</div></div>
+    </div>
+    <div class="card"><div class="st" data-i18n="ov.volCardTitle">Diễn biến lượng bài đăng</div><div class="sc" data-i18n="ov.volCardSub">theo ngày trong kỳ</div><canvas id="ovVol" height="90"></canvas></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="st" data-i18n="ov.leadTopicsTitle">Chủ đề dẫn dắt</div><div class="sc" data-i18n="tr.topTopicsSub">Xếp theo trend score</div>
+        <table><thead><tr><th data-i18n="th.topic">Chủ đề</th><th data-i18n="th.posts">Bài</th><th data-i18n="th.engagement">Tương tác</th><th data-i18n="th.sentiment">Tông thảo luận</th></tr></thead><tbody id="ovTopics"></tbody></table>
+        <div class="disc" data-i18n="disc.sentimentGeneric">Tông thảo luận là ước lượng tự động từ nội dung công khai, không phải kết luận chính thức.</div>
+      </div>
+      <div class="card">
+        <div class="st" data-i18n="ov.topEntTitle">Thực thể nổi bật</div><div class="sc" data-i18n="ov.topEntSub">Xếp theo lượng nhắc</div>
+        <table><thead><tr><th data-i18n="th.entity">Thực thể</th><th data-i18n="th.type">Loại</th><th data-i18n="th.mentions">Nhắc</th><th data-i18n="th.sentiment">Tông thảo luận</th></tr></thead><tbody id="ovEnts"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== XU HƯỚNG ===== -->
+  <div id="p-trends" class="page">
+    <div class="ph"><h1 data-i18n="tr.h1">Xu hướng</h1><p data-i18n="tr.p">Cụm chủ đề đang nổi. (Đổi tên cột "Label" → "Chủ đề".)</p></div>
+    <div class="card"><div class="st" data-i18n="tr.topTopicsTitle">Top chủ đề</div><div class="sc" data-i18n="tr.topTopicsSub">Xếp theo trend score</div><div id="t5list"></div></div>
+    <div class="grid2">
+      <div class="card"><div class="st"><span data-i18n="tr.totalPostsTitle">Tổng bài đăng</span><select class="sel" id="tMentWin" style="margin-left:auto;font-size:.78rem;padding:5px 9px" onchange="setTrendWindow('tMent',this.value)"><option value="24h" data-i18n="opt.24h">24h</option><option value="7d" selected data-i18n="opt.7d">7 ngày</option><option value="30d" data-i18n="opt.30d">30 ngày</option></select></div><div class="sc" data-i18n="tr.totalPostsSub">Diễn biến lượng bài đăng theo thời gian</div><canvas id="tMent" height="150"></canvas></div>
+      <div class="card"><div class="st"><span data-i18n="tr.totalDiscTitle">Tổng thảo luận</span><select class="sel" id="tToneWin" style="margin-left:auto;font-size:.78rem;padding:5px 9px" onchange="setTrendWindow('tTone',this.value)"><option value="24h" data-i18n="opt.24h">24h</option><option value="7d" selected data-i18n="opt.7d">7 ngày</option><option value="30d" data-i18n="opt.30d">30 ngày</option></select></div><div class="sc" data-i18n="tr.totalDiscSub">Tỉ trọng "cần chú ý" của chủ đề qua thời gian</div><canvas id="tTone" height="150"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ===== THỰC THỂ ===== -->
+  <div id="p-entities" class="page">
+    <div class="ph"><h1 data-i18n="ent.h1">Thực thể</h1><p data-i18n="ent.p">Top thực thể &amp; hashtag theo lượng nhắc, kèm co-mention.</p></div>
+    <div class="card">
+      <table><thead><tr><th>#</th><th data-i18n="th.type">Loại</th><th data-i18n="th.entity">Thực thể</th><th data-i18n="th.mentions">Nhắc</th><th data-i18n="th.sentimentDetail">Tông thảo luận (thuận lợi / trung lập / cần chú ý)</th></tr></thead><tbody id="entBody"></tbody></table>
+      <div class="disc" data-i18n="disc.comention">"Cùng xuất hiện trong bài" (co-mention) không phải quan hệ đã kiểm chứng. Nhãn tông là ước lượng tự động từ nội dung công khai.</div>
+    </div>
+  </div>
+
+  <!-- ===== CẠNH TRANH ===== -->
+  <div id="p-competitors" class="page">
+    <div class="ph"><h1 data-i18n="comp.h1">Cạnh tranh</h1><p data-i18n="comp.p">So sánh các thực thể type = Brand/Org.</p></div>
+    <div class="grid2">
+      <div class="card"><div class="st">Share of Voice</div><div class="sc" data-i18n="comp.sovSub">% lượng nhắc giữa các brand/org</div><canvas id="cShare" height="180"></canvas></div>
+      <div class="card"><div class="st" data-i18n="comp.sentByBrandTitle">Tông thảo luận theo brand</div><div class="sc" data-i18n="comp.sentByBrandSub">tỉ trọng thuận lợi / trung lập / cần chú ý</div><div id="cBars" style="padding-top:6px"></div></div>
+    </div>
+    <div class="enterprise-lock">
+      <div class="enterprise-lock-content">
+        <div class="card">
+          <div class="st" data-i18n="comp.tableTitle">Bảng so sánh</div><div class="sc" data-i18n="comp.tableSub">Mentions, Share of Voice, tông thảo luận, chủ đề gắn với brand</div>
+          <table><thead><tr><th>Brand / Org</th><th data-i18n="th.mentions">Nhắc</th><th>SoV</th><th data-i18n="th.sentiment">Tông thảo luận</th><th data-i18n="th.mainTopic">Chủ đề chính</th></tr></thead><tbody id="compBody"></tbody></table>
+          <div class="disc" data-i18n="disc.compTable">Tông thảo luận là ước lượng tự động từ nội dung công khai, không phải kết luận chính thức về tổ chức.</div>
+        </div>
+        <div class="card">
+          <div class="st"><span data-i18n="comp.postsTitle">Bài viết nổi bật</span> <span style="font-weight:400;color:#9aa1ad;font-size:.78rem" data-i18n="comp.postsTitleSuffix">theo brand</span></div>
+          <div class="sc" data-i18n="comp.postsSub">Bài công khai có tương tác cao nhất — bấm để xem đầy đủ ở tab Bài viết</div>
+          <div id="compPosts"></div>
+          <div class="disc" data-i18n="disc.postsSentiment">Nhãn tông gắn cho nội dung bài, không phải cho cá nhân người đăng.</div>
+        </div>
+      </div>
+      <div class="enterprise-lock-overlay">
+        <span class="enterprise-lock-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Unlocked Enterprise Account</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BÀI VIẾT ===== -->
+  <div id="p-posts" class="page">
+    <div class="ph"><h1 data-i18n="posts.h1">Bài viết</h1><p data-i18n="posts.p">Đọc &amp; tìm bài công khai trên Threads theo từ khoá, chủ đề, tông.</p></div>
+    <div class="controls">
+      <div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input class="search" placeholder="Tìm theo từ khoá / thực thể / #hashtag…" data-i18n-placeholder="posts.searchPh"></div>
+      <select class="sel"><option data-i18n="opt.allTopics">Tất cả chủ đề</option><option>Product recall</option><option>Beta trend</option><option>Alpha trend</option></select>
+      <select class="sel"><option data-i18n="opt.allSentiment">Tất cả tông</option><option data-i18n="opt.fav">Thuận lợi</option><option data-i18n="opt.neu">Trung lập</option><option data-i18n="opt.watch">Cần chú ý</option></select>
+      <select class="sel"><option data-i18n="opt.newest">Mới nhất</option><option data-i18n="opt.topEng">Tương tác cao</option></select>
+    </div>
+    <div class="card"><div id="postList"></div></div>
+    <div class="disc" style="margin-top:-6px" data-i18n="disc.postsPage">Hiển thị trích dẫn bài công khai + @handle nguồn. Nhãn tông gắn cho nội dung bài, là ước lượng tự động.</div>
+  </div>
+
+  <!-- ===== KHỦNG HOẢNG ===== -->
+  <div id="p-crisis" class="page">
+    <div class="ph"><h1 data-i18n="crisis.h1">Khủng hoảng &amp; Cảnh báo</h1><p data-i18n="crisis.p">Chủ đề vượt ngưỡng cảnh báo.</p></div>
+    <div class="card" style="border-left:4px solid var(--watch)">
+      <div class="st"><span style="color:var(--watch);width:18px;height:18px;display:inline-flex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg></span> <span data-i18n="crisis.cardTitle">Product recall — quanh Alpha Brand</span> <span class="risk" data-i18n="badge.exceeded">VƯỢT NGƯỠNG</span></div>
+      <div class="sc" data-i18n="crisis.sub">7+ bài · 60% bài "cần chú ý" · đang tăng · co-mention với Beta Org</div>
+      <div class="post-txt" style="font-style:italic" data-i18n="crisis.quote">“CẢNH BÁO: thu hồi sản phẩm Alpha Brand — dấu hiệu nhận biết…” — 9,400 tương tác</div>
+    </div>
+    <div class="disc" data-i18n="disc.crisis">Cảnh báo tự động khi tỉ trọng "cần chú ý" vượt ngưỡng &amp; lượng bài tăng nhanh. (Gửi email/Slack: lộ trình.)</div>
+  </div>
+
+  <!-- ===== CẤU HÌNH: TENANT ===== -->
+  <div id="p-cfgtenant" class="page">
+    <div class="ph"><h1>Tenant</h1><p data-i18n="cfgtenant.p">Thông tin không gian làm việc (tenant) và thương hiệu đang theo dõi.</p></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="st" data-i18n="cfgtenant.infoTitle">Thông tin Tenant</div><div class="sc" data-i18n="cfgtenant.infoSub">Chi tiết không gian làm việc</div>
+        <table>
+          <tbody>
+            <tr><td style="color:#9aa1ad" data-i18n="row.tenantName">Tên Tenant</td><td><strong>Brand A</strong></td></tr>
+            <tr><td style="color:#9aa1ad">Domain</td><td>brand-a.tsl.io</td></tr>
+            <tr><td style="color:#9aa1ad" data-i18n="row.currentPlan">Gói hiện tại</td><td>Founding <span class="tone t-fav" style="margin-left:6px" data-i18n="chip.active">Đang hoạt động</span></td></tr>
+            <tr><td style="color:#9aa1ad" data-i18n="row.startDate">Ngày bắt đầu</td><td>12/08/2026</td></tr>
+            <tr><td style="color:#9aa1ad" data-i18n="row.billingCycle">Chu kỳ thanh toán</td><td data-i18n="val.billingCycle">30 ngày · gia hạn 11/10/2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="st" data-i18n="cfgtenant.brandsTitle">Thương hiệu &amp; đối thủ theo dõi</div><div class="sc" data-i18n="cfgtenant.brandsSub">Phạm vi thực thể trong tenant này</div>
+        <table>
+          <tbody>
+            <tr><td><span class="etype e-brand">Brand</span> <strong>Alpha Brand</strong></td><td style="color:#9aa1ad" data-i18n="val.primaryBrand">Thương hiệu chính</td></tr>
+            <tr><td><span class="etype e-org">Org</span> <strong>Beta Org</strong></td><td style="color:#9aa1ad" data-i18n="val.competitor">Đối thủ</td></tr>
+            <tr><td><span class="etype e-brand">Brand</span> <strong>Gamma Corp</strong></td><td style="color:#9aa1ad" data-i18n="val.competitor">Đối thủ</td></tr>
+          </tbody>
+        </table>
+        <div class="disc" data-i18n="disc.cfgtenantBrands">Thêm/bớt thương hiệu theo dõi cần liên hệ đội ngũ TLP để cập nhật phạm vi thu thập.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CẤU HÌNH: THU THẬP ===== -->
+  <div id="p-cfgcollect" class="page">
+    <div class="ph"><h1 data-i18n="cfgcollect.h1">Thu thập</h1><p data-i18n="cfgcollect.p">Nguồn dữ liệu, từ khoá và phạm vi thu thập trên Threads.</p></div>
+    <div class="card">
+      <div class="st" data-i18n="cfgcollect.sourceTitle">Nguồn thu thập</div><div class="sc" data-i18n="cfgcollect.sourceSub">Nền tảng &amp; phạm vi nội dung</div>
+      <table>
+        <tbody>
+          <tr><td style="color:#9aa1ad" data-i18n="row.platform">Nền tảng</td><td>Threads</td></tr>
+          <tr><td style="color:#9aa1ad" data-i18n="row.contentType">Loại nội dung</td><td data-i18n="val.contentType">Bài đăng &amp; bình luận công khai</td></tr>
+          <tr><td style="color:#9aa1ad" data-i18n="row.frequency">Tần suất thu thập</td><td data-i18n="val.frequency">Gần thời gian thực (real-time)</td></tr>
+          <tr><td style="color:#9aa1ad" data-i18n="row.language">Ngôn ngữ</td><td data-i18n="val.language">Tiếng Việt · English</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="st" data-i18n="cfgcollect.keywordsTitle">Từ khoá đang theo dõi</div><div class="sc" data-i18n="cfgcollect.keywordsSub">8 từ khoá · cập nhật gần nhất 4 phút trước</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span class="comention">Alpha Brand</span>
+          <span class="comention">Beta Org</span>
+          <span class="comention">Gamma Corp</span>
+          <span class="comention">#delta</span>
+          <span class="comention">Product recall</span>
+          <span class="comention">Alpha trend</span>
+          <span class="comention">Beta trend</span>
+          <span class="comention">Measles topic</span>
+        </div>
+        <div class="disc" data-i18n="disc.cfgcollectKeywords">Bao gồm biến thể có dấu / không dấu, viết tắt và hashtag liên quan.</div>
+      </div>
+      <div class="card">
+        <div class="st" data-i18n="cfgcollect.exclTitle">Danh sách loại trừ</div><div class="sc" data-i18n="cfgcollect.exclSub">Giảm nhiễu từ nội dung không liên quan</div>
+        <table>
+          <tbody>
+            <tr><td>#spamword…</td><td style="color:#9aa1ad" data-i18n="val.excluded">Đã loại trừ</td></tr>
+          </tbody>
+        </table>
+        <div class="disc" data-i18n="disc.cfgcollectExcl">Nội dung khớp danh sách loại trừ sẽ không được tính vào số liệu &amp; báo cáo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CẤU HÌNH: MỨC SỬ DỤNG ===== -->
+  <div id="p-cfgusage" class="page">
+    <div class="ph"><h1 data-i18n-html="usage.h1html">Mức sử dụng <span class="etype e-brand" style="vertical-align:middle;margin-left:8px">Gói Founding</span></h1><p data-i18n="usage.p">Hạn mức Credit/ngày, Usage Credit theo chu kỳ và tình trạng sử dụng hiện tại.</p></div>
+
+    <div class="card">
+      <div class="st" data-i18n="usage.creditTitle">1 Credit là gì?</div>
+      <div class="sc">Post Search + Post Analytic + Post Scoring = 1 Credit</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 2px">
+        <span class="comention" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Post Search</span>
+        <span style="color:var(--muted2);font-weight:800;font-size:.9rem">+</span>
+        <span class="comention" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>Post Analytic</span>
+        <span style="color:var(--muted2);font-weight:800;font-size:.9rem">+</span>
+        <span class="comention" style="display:inline-flex;align-items:center;gap:6px;padding:6px 13px"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Post Scoring</span>
+        <span style="color:var(--muted2);font-weight:800;font-size:.9rem">=</span>
+        <span class="etype e-brand" style="font-size:.78rem;padding:6px 14px;font-weight:700">1 Credit ≈ 1 post</span>
+      </div>
+      <div class="disc" data-i18n="disc.creditRatio">Tỷ lệ quy đổi có thể thấp hơn hoặc cao hơn 1:1, tuỳ theo hiệu suất của từng bài viết (lượt tương tác, độ phức tạp nội dung, …).</div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.creditToday">Credit đã dùng hôm nay</div><div class="kpi-v">4,200</div><div class="kpi-d flat" data-i18n="kpi.creditTodayDelta">/ 10,000 Credit/ngày (Founding)</div></div>
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.postsToday">Bài đăng hôm nay</div><div class="kpi-v">~4,200</div><div class="kpi-d flat" data-i18n="kpi.postsTodayDelta">post (~1 post/Credit, biến động)</div></div>
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.seats">Seat đang dùng</div><div class="kpi-v">1</div><div class="kpi-d flat" data-i18n="kpi.seatsDelta">/ 3 seat</div></div>
+      <div class="kpi"><div class="kpi-l" data-i18n="kpi.subPeriod">Kỳ Subscription</div><div class="kpi-v" style="font-size:1.15rem">11/09/2026 – 11/10/2026</div><div class="kpi-d flat" data-i18n="kpi.subPeriodDelta">Billing 30 ngày/kỳ · gia hạn tự động</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="st" data-i18n="usage.dailyLimitTitle">Hạn mức Credit / ngày</div><div class="sc" data-i18n="usage.dailyLimitSub">42% đã dùng hôm nay · làm mới lúc 00:00 hằng ngày</div>
+        <div class="bar" style="height:10px;border-radius:6px"><div style="width:42%;background:#4f6ef7;height:10px;border-radius:6px"></div></div>
+        <div class="mini" style="margin-top:6px" data-i18n="usage.dailyLimitMini">4,200 / 10,000 Credit hôm nay</div>
+      </div>
+      <div class="card">
+        <div class="st" data-i18n-html="usage.cycleTitlehtml">Usage Credit <span style="font-weight:400;color:#9aa1ad;font-size:.78rem">chu kỳ 30 ngày</span></div><div class="sc" data-i18n="usage.cycleSub">62% đã sử dụng trong kỳ</div>
+        <div class="bar" style="height:10px;border-radius:6px"><div style="width:62%;background:#d9a441;height:10px;border-radius:6px"></div></div>
+        <div class="mini" style="margin-top:6px" data-i18n="usage.cycleMini">186,000 / ~300,000 Credit (tương đương) · làm mới đầu mỗi chu kỳ</div>
+      </div>
+    </div>
+    <div class="disc" data-i18n="disc.usageFooter">Hạn mức Credit được làm mới hằng ngày lúc 00:00; chu kỳ thanh toán 30 ngày được làm mới vào đầu mỗi kỳ. Liên hệ TLP để nâng cấp lên Enterprise nếu cần capacity cao hơn Founding.</div>
+  </div>
+
+  <!-- ===== CẤU HÌNH: TÀI KHOẢN ===== -->
+  <div id="p-cfgaccount" class="page">
+    <div class="ph"><h1 data-i18n="cfgaccount.h1">Tài khoản</h1><p data-i18n="cfgaccount.p">Thành viên, vai trò và quyền truy cập trong tenant.</p></div>
+    <div class="card">
+      <div class="st" data-i18n-html="cfgaccount.membersTitlehtml">Thành viên (2/3 seat) <span style="margin-left:auto;font-weight:400;color:#9aa1ad;font-size:.78rem">Nâng cấp gói để thêm seat</span></div>
+      <div class="sc" data-i18n="cfgaccount.membersSub">Vai trò &amp; quyền truy cập dashboard</div>
+      <table>
+        <thead><tr><th data-i18n="th.member">Thành viên</th><th data-i18n="th.role">Vai trò</th><th data-i18n="th.email">Email</th><th data-i18n="th.status">Trạng thái</th></tr></thead>
+        <tbody>
+          <tr><td><span class="ava">LP</span> <strong>Linh Pham</strong></td><td data-i18n="val.owner">Chủ tài khoản</td><td>l***@brand-a.com</td><td><span class="tone t-fav" data-i18n="chip.active">Đang hoạt động</span></td></tr>
+          <tr><td><span class="ava">AN</span> <strong>An Nguyen</strong></td><td data-i18n="val.analyst">Phân tích viên</td><td>a***@brand-a.com</td><td><span class="tone t-fav" data-i18n="chip.active">Đang hoạt động</span></td></tr>
+        </tbody>
+      </table>
+      <div class="disc" data-i18n="disc.emailMask">Email được ẩn một phần để bảo mật thông tin trong bản demo.</div>
+    </div>
+    <div class="card">
+      <div class="st" data-i18n="cfgaccount.rolesTitle">Vai trò &amp; quyền truy cập</div><div class="sc" data-i18n="cfgaccount.rolesSub">Phân quyền theo vai trò trong tenant</div>
+      <table>
+        <thead><tr><th data-i18n="th.role">Vai trò</th><th data-i18n="th.viewDashboard">Xem Dashboard</th><th data-i18n="th.exportReports">Xuất báo cáo</th><th data-i18n="th.cfgBilling">Cấu hình &amp; Billing</th></tr></thead>
+        <tbody>
+          <tr><td><strong data-i18n="val.owner">Chủ tài khoản</strong></td><td>✓</td><td>✓</td><td>✓</td></tr>
+          <tr><td><strong data-i18n="val.analyst">Phân tích viên</strong></td><td>✓</td><td>✓</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  </div>
+</main>
+</div>
+
+<div class="lang-switch">
+  <button class="lang-btn active" id="langBtnVI" onclick="setLang('vi')">VI</button>
+  <button class="lang-btn" id="langBtnEN" onclick="setLang('en')">EN</button>
+</div>
+
+<script>
+const I18N = {"vi": {"sidebar.follow": "Theo dõi", "sidebar.config": "Cấu hình", "nav.overview": "Tổng quan", "nav.trends": "Xu hướng", "nav.entities": "Thực thể", "nav.competitors": "Cạnh tranh", "nav.posts": "Bài viết", "nav.crisis": "Khủng hoảng", "nav.cfgtenant": "Tenant", "nav.cfgcollect": "Thu thập", "nav.cfgusage": "Mức sử dụng", "nav.cfgaccount": "Tài khoản", "badge.new": "MỚI", "badge.needsAttention": "CẦN CHÚ Ý", "badge.exceeded": "VƯỢT NGƯỠNG", "topbar.title": "Bảng điều khiển · Community Insight", "topbar.note": "cập nhật 4 phút trước · tenant demo", "ctrl.period": "Kỳ", "opt.24h": "24h", "opt.7d": "7 ngày", "opt.30d": "30 ngày", "opt.90d": "90 ngày", "ov.h1": "Tổng quan", "ov.p": "Bức tranh nhanh trong kỳ (thay cho \"Báo cáo ngày\" chỉ có text).", "ov.crisisLabel": "1 chủ đề cần chú ý đang hoạt động:", "ov.crisisText": "<b>Product recall</b> quanh <b>Alpha Brand</b> — 60% bài được phân loại \"cần chú ý\" và đang tăng.", "ov.crisisBtn": "Xem chi tiết →", "kpi.totalPosts": "Tổng bài đăng", "kpi.totalPostsDelta": "▲ 18% vs kỳ trước", "kpi.totalEng": "Tổng tương tác", "kpi.trackedEnt": "Thực thể theo dõi", "kpi.watchTopics": "Chủ đề cần chú ý", "kpi.watchTopicsDelta": "1 vượt ngưỡng cảnh báo", "ov.volCardTitle": "Diễn biến lượng bài đăng", "ov.volCardSub": "theo ngày trong kỳ", "ov.leadTopicsTitle": "Chủ đề dẫn dắt", "ov.topEntTitle": "Thực thể nổi bật", "ov.topEntSub": "Xếp theo lượng nhắc", "th.topic": "Chủ đề", "th.posts": "Bài", "th.engagement": "Tương tác", "th.sentiment": "Tông thảo luận", "th.entity": "Thực thể", "th.type": "Loại", "th.mentions": "Nhắc", "disc.sentimentGeneric": "Tông thảo luận là ước lượng tự động từ nội dung công khai, không phải kết luận chính thức.", "tr.h1": "Xu hướng", "tr.p": "Cụm chủ đề đang nổi. (Đổi tên cột \"Label\" → \"Chủ đề\".)", "tr.topTopicsTitle": "Top chủ đề", "tr.topTopicsSub": "Xếp theo trend score", "tr.totalPostsTitle": "Tổng bài đăng", "tr.totalPostsSub": "Diễn biến lượng bài đăng theo thời gian", "tr.totalDiscTitle": "Tổng thảo luận", "tr.totalDiscSub": "Tỉ trọng \"cần chú ý\" của chủ đề qua thời gian", "ent.h1": "Thực thể", "ent.p": "Top thực thể & hashtag theo lượng nhắc, kèm co-mention.", "th.sentimentDetail": "Tông thảo luận (thuận lợi / trung lập / cần chú ý)", "disc.comention": "\"Cùng xuất hiện trong bài\" (co-mention) không phải quan hệ đã kiểm chứng. Nhãn tông là ước lượng tự động từ nội dung công khai.", "comp.h1": "Cạnh tranh", "comp.p": "So sánh các thực thể type = Brand/Org.", "comp.sovSub": "% lượng nhắc giữa các brand/org", "comp.sentByBrandTitle": "Tông thảo luận theo brand", "comp.sentByBrandSub": "tỉ trọng thuận lợi / trung lập / cần chú ý", "comp.tableTitle": "Bảng so sánh", "comp.tableSub": "Mentions, Share of Voice, tông thảo luận, chủ đề gắn với brand", "th.mainTopic": "Chủ đề chính", "disc.compTable": "Tông thảo luận là ước lượng tự động từ nội dung công khai, không phải kết luận chính thức về tổ chức.", "comp.postsTitle": "Bài viết nổi bật", "comp.postsTitleSuffix": "theo brand", "comp.postsSub": "Bài công khai có tương tác cao nhất — bấm để xem đầy đủ ở tab Bài viết", "disc.postsSentiment": "Nhãn tông gắn cho nội dung bài, không phải cho cá nhân người đăng.", "posts.h1": "Bài viết", "posts.p": "Đọc & tìm bài công khai trên Threads theo từ khoá, chủ đề, tông.", "posts.searchPh": "Tìm theo từ khoá / thực thể / #hashtag…", "opt.allTopics": "Tất cả chủ đề", "opt.allSentiment": "Tất cả tông", "opt.fav": "Thuận lợi", "opt.neu": "Trung lập", "opt.watch": "Cần chú ý", "opt.newest": "Mới nhất", "opt.topEng": "Tương tác cao", "disc.postsPage": "Hiển thị trích dẫn bài công khai + @handle nguồn. Nhãn tông gắn cho nội dung bài, là ước lượng tự động.", "crisis.h1": "Khủng hoảng & Cảnh báo", "crisis.p": "Chủ đề vượt ngưỡng cảnh báo.", "crisis.cardTitle": "Product recall — quanh Alpha Brand", "crisis.sub": "7+ bài · 60% bài \"cần chú ý\" · đang tăng · co-mention với Beta Org", "crisis.quote": "“CẢNH BÁO: thu hồi sản phẩm Alpha Brand — dấu hiệu nhận biết…” — 9,400 tương tác", "disc.crisis": "Cảnh báo tự động khi tỉ trọng \"cần chú ý\" vượt ngưỡng & lượng bài tăng nhanh. (Gửi email/Slack: lộ trình.)", "cfgtenant.p": "Thông tin không gian làm việc (tenant) và thương hiệu đang theo dõi.", "cfgtenant.infoTitle": "Thông tin Tenant", "cfgtenant.infoSub": "Chi tiết không gian làm việc", "row.tenantName": "Tên Tenant", "row.currentPlan": "Gói hiện tại", "chip.active": "Đang hoạt động", "row.startDate": "Ngày bắt đầu", "row.billingCycle": "Chu kỳ thanh toán", "val.billingCycle": "30 ngày · gia hạn 11/10/2026", "cfgtenant.brandsTitle": "Thương hiệu & đối thủ theo dõi", "cfgtenant.brandsSub": "Phạm vi thực thể trong tenant này", "val.primaryBrand": "Thương hiệu chính", "val.competitor": "Đối thủ", "disc.cfgtenantBrands": "Thêm/bớt thương hiệu theo dõi cần liên hệ đội ngũ TLP để cập nhật phạm vi thu thập.", "cfgcollect.h1": "Thu thập", "cfgcollect.p": "Nguồn dữ liệu, từ khoá và phạm vi thu thập trên Threads.", "cfgcollect.sourceTitle": "Nguồn thu thập", "cfgcollect.sourceSub": "Nền tảng & phạm vi nội dung", "row.platform": "Nền tảng", "row.contentType": "Loại nội dung", "val.contentType": "Bài đăng & bình luận công khai", "row.frequency": "Tần suất thu thập", "val.frequency": "Gần thời gian thực (real-time)", "row.language": "Ngôn ngữ", "val.language": "Tiếng Việt · English", "cfgcollect.keywordsTitle": "Từ khoá đang theo dõi", "cfgcollect.keywordsSub": "8 từ khoá · cập nhật gần nhất 4 phút trước", "disc.cfgcollectKeywords": "Bao gồm biến thể có dấu / không dấu, viết tắt và hashtag liên quan.", "cfgcollect.exclTitle": "Danh sách loại trừ", "cfgcollect.exclSub": "Giảm nhiễu từ nội dung không liên quan", "val.excluded": "Đã loại trừ", "disc.cfgcollectExcl": "Nội dung khớp danh sách loại trừ sẽ không được tính vào số liệu & báo cáo.", "usage.h1html": "Mức sử dụng <span class=\"etype e-brand\" style=\"vertical-align:middle;margin-left:8px\">Gói Founding</span>", "usage.p": "Hạn mức Credit/ngày, Usage Credit theo chu kỳ và tình trạng sử dụng hiện tại.", "usage.creditTitle": "1 Credit là gì?", "disc.creditRatio": "Tỷ lệ quy đổi có thể thấp hơn hoặc cao hơn 1:1, tuỳ theo hiệu suất của từng bài viết (lượt tương tác, độ phức tạp nội dung, …).", "kpi.creditToday": "Credit đã dùng hôm nay", "kpi.creditTodayDelta": "/ 10,000 Credit/ngày (Founding)", "kpi.postsToday": "Bài đăng hôm nay", "kpi.postsTodayDelta": "post (~1 post/Credit, biến động)", "kpi.seats": "Seat đang dùng", "kpi.seatsDelta": "/ 3 seat", "kpi.subPeriod": "Kỳ Subscription", "kpi.subPeriodDelta": "Billing 30 ngày/kỳ · gia hạn tự động", "usage.dailyLimitTitle": "Hạn mức Credit / ngày", "usage.dailyLimitSub": "42% đã dùng hôm nay · làm mới lúc 00:00 hằng ngày", "usage.dailyLimitMini": "4,200 / 10,000 Credit hôm nay", "usage.cycleTitlehtml": "Usage Credit <span style=\"font-weight:400;color:#9aa1ad;font-size:.78rem\">chu kỳ 30 ngày</span>", "usage.cycleSub": "62% đã sử dụng trong kỳ", "usage.cycleMini": "186,000 / ~300,000 Credit (tương đương) · làm mới đầu mỗi chu kỳ", "disc.usageFooter": "Hạn mức Credit được làm mới hằng ngày lúc 00:00; chu kỳ thanh toán 30 ngày được làm mới vào đầu mỗi kỳ. Liên hệ TLP để nâng cấp lên Enterprise nếu cần capacity cao hơn Founding.", "cfgaccount.h1": "Tài khoản", "cfgaccount.p": "Thành viên, vai trò và quyền truy cập trong tenant.", "cfgaccount.membersTitlehtml": "Thành viên (2/3 seat) <span style=\"margin-left:auto;font-weight:400;color:#9aa1ad;font-size:.78rem\">Nâng cấp gói để thêm seat</span>", "cfgaccount.membersSub": "Vai trò & quyền truy cập dashboard", "th.member": "Thành viên", "th.role": "Vai trò", "th.email": "Email", "th.status": "Trạng thái", "val.owner": "Chủ tài khoản", "val.analyst": "Phân tích viên", "disc.emailMask": "Email được ẩn một phần để bảo mật thông tin trong bản demo.", "cfgaccount.rolesTitle": "Vai trò & quyền truy cập", "cfgaccount.rolesSub": "Phân quyền theo vai trò trong tenant", "th.viewDashboard": "Xem Dashboard", "th.exportReports": "Xuất báo cáo", "th.cfgBilling": "Cấu hình & Billing", "u.needsAttention": "cần chú ý", "chip.fav": "Thuận lợi", "chip.watch": "Cần chú ý", "chip.neu": "Trung lập", "u.mentions": "nhắc", "u.about": "về", "u.engagements": "tương tác", "u.posts": "bài", "u.pctNeedsAttention": "% cần chú ý"}, "en": {"sidebar.follow": "Monitoring", "sidebar.config": "Configuration", "nav.overview": "Overview", "nav.trends": "Trends", "nav.entities": "Entities", "nav.competitors": "Competitors", "nav.posts": "Posts", "nav.crisis": "Crisis", "nav.cfgtenant": "Tenant", "nav.cfgcollect": "Collection", "nav.cfgusage": "Usage", "nav.cfgaccount": "Account", "badge.new": "NEW", "badge.needsAttention": "NEEDS ATTENTION", "badge.exceeded": "THRESHOLD EXCEEDED", "topbar.title": "Dashboard · Community Insight", "topbar.note": "updated 4 minutes ago · demo tenant", "ctrl.period": "Period", "opt.24h": "24h", "opt.7d": "7 days", "opt.30d": "30 days", "opt.90d": "90 days", "ov.h1": "Overview", "ov.p": "A quick snapshot for the period (replacing the text-only \"Daily report\").", "ov.crisisLabel": "1 active topic needs attention:", "ov.crisisText": "<b>Product recall</b> around <b>Alpha Brand</b> — 60% of posts classified \"needs attention\" and rising.", "ov.crisisBtn": "View details →", "kpi.totalPosts": "Total posts", "kpi.totalPostsDelta": "▲ 18% vs previous period", "kpi.totalEng": "Total engagement", "kpi.trackedEnt": "Tracked entities", "kpi.watchTopics": "Topics needing attention", "kpi.watchTopicsDelta": "1 over alert threshold", "ov.volCardTitle": "Post volume trend", "ov.volCardSub": "by day in period", "ov.leadTopicsTitle": "Leading topics", "ov.topEntTitle": "Top entities", "ov.topEntSub": "Ranked by mention volume", "th.topic": "Topic", "th.posts": "Posts", "th.engagement": "Engagement", "th.sentiment": "Sentiment", "th.entity": "Entity", "th.type": "Type", "th.mentions": "Mentions", "disc.sentimentGeneric": "Sentiment is an automated estimate from public content, not an official conclusion.", "tr.h1": "Trends", "tr.p": "Emerging topic clusters. (Column \"Label\" renamed to \"Topic\".)", "tr.topTopicsTitle": "Top topics", "tr.topTopicsSub": "Ranked by trend score", "tr.totalPostsTitle": "Total posts", "tr.totalPostsSub": "Post volume over time", "tr.totalDiscTitle": "Total discussion", "tr.totalDiscSub": "Share of topic posts \"needing attention\" over time", "ent.h1": "Entities", "ent.p": "Top entities & hashtags by mention volume, with co-mentions.", "th.sentimentDetail": "Sentiment (favorable / neutral / needs attention)", "disc.comention": "\"Co-mention\" is not a verified relationship. Sentiment labels are automated estimates from public content.", "comp.h1": "Competitors", "comp.p": "Comparison of entities where type = Brand/Org.", "comp.sovSub": "% of mentions among brands/orgs", "comp.sentByBrandTitle": "Sentiment by brand", "comp.sentByBrandSub": "share of favorable / neutral / needs attention", "comp.tableTitle": "Comparison table", "comp.tableSub": "Mentions, Share of Voice, sentiment, topics linked to the brand", "th.mainTopic": "Main topic", "disc.compTable": "Sentiment is an automated estimate from public content, not an official conclusion about the organization.", "comp.postsTitle": "Top posts", "comp.postsTitleSuffix": "by brand", "comp.postsSub": "Highest-engagement public posts — click to see more in the Posts tab", "disc.postsSentiment": "Sentiment labels apply to post content, not to the individual poster.", "posts.h1": "Posts", "posts.p": "Read & search public Threads posts by keyword, topic, sentiment.", "posts.searchPh": "Search by keyword / entity / #hashtag…", "opt.allTopics": "All topics", "opt.allSentiment": "All sentiment", "opt.fav": "Favorable", "opt.neu": "Neutral", "opt.watch": "Needs attention", "opt.newest": "Newest", "opt.topEng": "Highest engagement", "disc.postsPage": "Shows public post excerpts + source @handle. Sentiment labels apply to post content and are automated estimates.", "crisis.h1": "Crisis & Alerts", "crisis.p": "Topics over the alert threshold.", "crisis.cardTitle": "Product recall — around Alpha Brand", "crisis.sub": "7+ posts · 60% \"needs attention\" · rising · co-mentioned with Beta Org", "crisis.quote": "“WARNING: Alpha Brand product recall — signs to look for…” — 9,400 engagements", "disc.crisis": "Automatic alert when the \"needs attention\" share crosses the threshold & post volume rises fast. (Email/Slack alerts: on the roadmap.)", "cfgtenant.p": "Workspace (tenant) information and tracked brands.", "cfgtenant.infoTitle": "Tenant Information", "cfgtenant.infoSub": "Workspace details", "row.tenantName": "Tenant Name", "row.currentPlan": "Current Plan", "chip.active": "Active", "row.startDate": "Start Date", "row.billingCycle": "Billing Cycle", "val.billingCycle": "30 days · renews 11/10/2026", "cfgtenant.brandsTitle": "Tracked Brands & Competitors", "cfgtenant.brandsSub": "Entity scope within this tenant", "val.primaryBrand": "Primary brand", "val.competitor": "Competitor", "disc.cfgtenantBrands": "Adding/removing tracked brands requires contacting the TLP team to update the collection scope.", "cfgcollect.h1": "Collection", "cfgcollect.p": "Data sources, keywords, and collection scope on Threads.", "cfgcollect.sourceTitle": "Collection Source", "cfgcollect.sourceSub": "Platform & content scope", "row.platform": "Platform", "row.contentType": "Content Type", "val.contentType": "Public posts & comments", "row.frequency": "Collection Frequency", "val.frequency": "Near real-time", "row.language": "Language", "val.language": "Vietnamese · English", "cfgcollect.keywordsTitle": "Tracked Keywords", "cfgcollect.keywordsSub": "8 keywords · last updated 4 minutes ago", "disc.cfgcollectKeywords": "Includes accented/unaccented variants, abbreviations, and related hashtags.", "cfgcollect.exclTitle": "Exclusion List", "cfgcollect.exclSub": "Reduce noise from unrelated content", "val.excluded": "Excluded", "disc.cfgcollectExcl": "Content matching the exclusion list is not counted in metrics & reports.", "usage.h1html": "Usage <span class=\"etype e-brand\" style=\"vertical-align:middle;margin-left:8px\">Founding Plan</span>", "usage.p": "Daily Credit limit, cycle Usage Credit, and current usage status.", "usage.creditTitle": "What's 1 Credit?", "disc.creditRatio": "The conversion ratio can be lower or higher than 1:1, depending on each post's performance (engagement, content complexity, …).", "kpi.creditToday": "Credit Used Today", "kpi.creditTodayDelta": "/ 10,000 Credit/day (Founding)", "kpi.postsToday": "Posts Today", "kpi.postsTodayDelta": "posts (~1 post/Credit, variable)", "kpi.seats": "Seats Used", "kpi.seatsDelta": "/ 3 seats", "kpi.subPeriod": "Subscription Period", "kpi.subPeriodDelta": "30-day billing cycle · auto-renews", "usage.dailyLimitTitle": "Daily Credit Limit", "usage.dailyLimitSub": "42% used today · resets daily at 00:00", "usage.dailyLimitMini": "4,200 / 10,000 Credit today", "usage.cycleTitlehtml": "Usage Credit <span style=\"font-weight:400;color:#9aa1ad;font-size:.78rem\">30-day cycle</span>", "usage.cycleSub": "62% used this period", "usage.cycleMini": "186,000 / ~300,000 Credit (equivalent) · resets at the start of each cycle", "disc.usageFooter": "The daily Credit limit resets at 00:00; the 30-day billing cycle renews at the start of each period. Contact TLP to upgrade to Enterprise if you need higher capacity than Founding.", "cfgaccount.h1": "Account", "cfgaccount.p": "Members, roles, and access permissions within the tenant.", "cfgaccount.membersTitlehtml": "Members (2/3 seats) <span style=\"margin-left:auto;font-weight:400;color:#9aa1ad;font-size:.78rem\">Upgrade plan to add seats</span>", "cfgaccount.membersSub": "Dashboard roles & access", "th.member": "Member", "th.role": "Role", "th.email": "Email", "th.status": "Status", "val.owner": "Account Owner", "val.analyst": "Analyst", "disc.emailMask": "Emails are partially masked to protect information in this demo.", "cfgaccount.rolesTitle": "Roles & Permissions", "cfgaccount.rolesSub": "Role-based permissions within the tenant", "th.viewDashboard": "View Dashboard", "th.exportReports": "Export Reports", "th.cfgBilling": "Configuration & Billing", "u.needsAttention": "needs attention", "chip.fav": "Favorable", "chip.watch": "Needs attention", "chip.neu": "Neutral", "u.mentions": "mentions", "u.about": "about", "u.engagements": "engagements", "u.posts": "posts", "u.pctNeedsAttention": "% needs attention"}};
+let LANG='vi';
+function TXT(k){const d=I18N[LANG]||I18N.vi;return d[k]!==undefined?d[k]:(I18N.vi[k]!==undefined?I18N.vi[k]:k);}
+function DAYS(){return LANG==='en'?['Mon','Tue','Wed','Thu','Fri','Sat','Sun']:['T2','T3','T4','T5','T6','T7','CN'];}
+
+function stack(fav,watch,neu){return `<div class="sbar"><span style="width:${fav}%;background:var(--fav)"></span><span style="width:${neu}%;background:var(--neu)"></span><span style="width:${watch}%;background:var(--watch)"></span></div><div class="sleg">${watch}% ${TXT('u.needsAttention')}</div>`;}
+function toneChip(k){return k==='fav'?`<span class="tone t-fav">${TXT('chip.fav')}</span>`:k==='watch'?`<span class="tone t-watch">${TXT('chip.watch')}</span>`:`<span class="tone t-neu">${TXT('chip.neu')}</span>`;}
+
+// Entities: name,typecls,typelabel,mentions, fav,watch,neu, topic, tone
+const ENTS=[
+ ['Alpha Brand','e-brand','Brand',500,20,60,20,'Product recall','watch'],
+ ['Beta Org','e-org','Org',320,45,20,35,'Beta trend','fav'],
+ ['Gamma Corp','e-brand','Brand',210,35,25,40,'Alpha trend','neu'],
+ ['#spamword…','e-hash','Hashtag',12,20,30,50,'—','neu'],
+ ['Gamma Person','e-person','Person',60,25,40,35,'Product recall','watch'],
+ ['#delta','e-hash','Hashtag',40,55,10,35,'Delta trend','fav'],
+];
+function fillEntities(){document.getElementById('entBody').innerHTML=ENTS.map((e,i)=>`<tr><td>${i+1}</td><td><span class="etype ${e[1]}">${e[2]}</span></td><td><strong>${e[0]}</strong></td><td>${e[3].toLocaleString()}</td><td>${stack(e[4],e[5],e[6])}</td></tr>`).join('');}
+function fillOvEnts(){document.getElementById('ovEnts').innerHTML=ENTS.slice(0,5).map(e=>`<tr><td><strong>${e[0]}</strong></td><td><span class="etype ${e[1]}">${e[2]}</span></td><td>${e[3].toLocaleString()}</td><td>${toneChip(e[8])}</td></tr>`).join('');}
+
+const TOPICS=[['Product recall',12,'22K','watch',true],['Alpha trend',9,'14K','neu',false],['Beta trend',8,'19K','fav',false],['Measles topic',7,'9K','watch',false],['Delta trend',2,'2K','neu',false]];
+function fillOvTopics(){document.getElementById('ovTopics').innerHTML=TOPICS.map(t=>`<tr><td><strong>${t[0]}</strong>${t[4]?`<span class="risk">${TXT('badge.needsAttention')}</span>`:''}</td><td>${t[1]}</td><td>${t[2]}</td><td>${toneChip(t[3])}</td></tr>`).join('');}
+
+const FP_VI=[['Alpha Brand','@user.k1','9,400','watch','“CẢNH BÁO: thu hồi sản phẩm Alpha Brand — dấu hiệu nhận biết…”'],
+           ['Beta Org','@host.a','5,200','fav','“Trải nghiệm Beta Org tuần này khá ổn, đáng thử.”'],
+           ['Gamma Corp','@user.x','900','neu','“Gamma Corp giá hợp lý hơn, tuỳ nhu cầu mà chọn.”']];
+const FP_EN=[['Alpha Brand','@user.k1','9,400','watch','“WARNING: Alpha Brand product recall — signs to look for…”'],
+           ['Beta Org','@host.a','5,200','fav','“The Beta Org experience this week has been solid, worth trying.”'],
+           ['Gamma Corp','@user.x','900','neu','“Gamma Corp is more affordable, depends on your needs.”']];
+function fillComp(){const comp=ENTS.filter(e=>e[2]==='Brand'||e[2]==='Org');const tot=comp.reduce((s,e)=>s+e[3],0);
+ document.getElementById('compBody').innerHTML=comp.map(e=>`<tr><td><span class="etype ${e[1]}">${e[2]}</span> <strong>${e[0]}</strong></td><td>${e[3].toLocaleString()}</td><td>${Math.round(e[3]/tot*100)}%</td><td>${stack(e[4],e[5],e[6])}</td><td><span class="comention">${e[7]}</span></td></tr>`).join('');
+ document.getElementById('cBars').innerHTML=comp.map(e=>`<div style="margin-bottom:12px"><div style="font-size:.8rem;font-weight:600;margin-bottom:4px">${e[0]} <span style="color:#9aa1ad;font-weight:400">· ${e[3]} ${TXT('u.mentions')}</span></div>${stack(e[4],e[5],e[6])}</div>`).join('');
+ const fp=LANG==='en'?FP_EN:FP_VI;
+ document.getElementById('compPosts').innerHTML=fp.map(p=>`<div class="post"><div class="post-h"><span class="ava">${p[1][1].toUpperCase()}</span><span class="hn">${p[1]}</span><span class="tm">· ${TXT('u.about')} ${p[0]}</span></div><div class="post-txt">${p[4]}</div><div class="post-m">${toneChip(p[3])} · ${p[2]} ${TXT('u.engagements')} · Threads</div></div>`).join('');
+}
+
+const POSTS_VI=[
+ ['@user.k1','2 giờ','watch','Product recall','“CẢNH BÁO: thu hồi sản phẩm Alpha Brand — dấu hiệu nhận biết trên bao bì…”','9,400'],
+ ['@mombeo','4 giờ','watch','Product recall','“Nhà có con nhỏ mình cân nhắc lại Alpha Brand sau vụ recall.”','3,100'],
+ ['@host.a','6 giờ','fav','Beta trend','“Beta Org tuần này khá ổn, đáng thử. Ai dùng rồi review thêm nhé.”','5,200'],
+ ['@foodie','8 giờ','neu','Alpha trend','“So sánh Alpha Brand vs Gamma Corp — mỗi bên một điểm mạnh, tuỳ nhu cầu.”','1,300'],
+ ['@user.x','10 giờ','fav','Alpha trend','“Gamma Corp giá hợp lý hơn với mình.”','900'],
+ ['@user.y','12 giờ','neu','Delta trend','“#delta đang lên, ai nắm thông tin gì không?”','400'],
+];
+const POSTS_EN=[
+ ['@user.k1','2h ago','watch','Product recall','“WARNING: Alpha Brand product recall — signs to check on the packaging…”','9,400'],
+ ['@mombeo','4h ago','watch','Product recall','“We have young kids at home, reconsidering Alpha Brand after the recall.”','3,100'],
+ ['@host.a','6h ago','fav','Beta trend','“Beta Org has been pretty solid this week, worth trying. If you have used it, drop a review.”','5,200'],
+ ['@foodie','8h ago','neu','Alpha trend','“Comparing Alpha Brand vs Gamma Corp — each has its own strength, depends on your needs.”','1,300'],
+ ['@user.x','10h ago','fav','Alpha trend','“Gamma Corp is more affordable for me.”','900'],
+ ['@user.y','12h ago','neu','Delta trend','“#delta is trending up, anyone have more info?”','400'],
+];
+function fillPosts(){const POSTS=LANG==='en'?POSTS_EN:POSTS_VI;document.getElementById('postList').innerHTML=POSTS.map(p=>`<div class="post"><div class="post-h"><span class="ava">${p[0][1].toUpperCase()}</span><span class="hn">${p[0]}</span><span class="tm">· ${p[1]} · Threads</span></div><div class="post-txt">${p[4]}</div><div class="post-m">${toneChip(p[2])} · <span class="comention" style="margin:0">${p[3]}</span> · ${p[5]} ${TXT('u.engagements')}</div></div>`).join('');}
+
+const T5=[['Product recall',12,'watch','#dc2626',true],['Alpha trend',9,'neu','#9aa3af',false],['Beta trend',8,'fav','#16a34a',false],['Measles topic',7,'watch','#dc2626',false],['Delta trend',2,'neu','#9aa3af',false]];
+function fillT5(){const mx=Math.max(...T5.map(r=>r[1]));document.getElementById('t5list').innerHTML=T5.map((r,i)=>`<div class="top5"><div class="rk ${i<2?'hot':''}">${i+1}</div><div style="flex:1"><div style="font-weight:600">${r[0]} ${r[4]?`<span class="risk">${TXT('badge.needsAttention')}</span>`:''}</div><div class="bar"><div style="width:${Math.round(r[1]/mx*100)}%;background:${r[3]}"></div></div></div><div style="text-align:right">${toneChip(r[2])}<div class="mini">${r[1]} ${TXT('u.posts')}</div></div></div>`).join('');}
+
+const CFG_PAGES=['cfgtenant','cfgcollect','cfgusage','cfgaccount'];
+function go(p,btn){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');if(btn)btn.classList.add('active');
+ const pc=document.getElementById('periodControls');if(pc)pc.style.display=CFG_PAGES.includes(p)?'none':'flex';
+ if(p==='overview')initOv();if(p==='trends')initTrends();if(p==='entities')fillEntities();if(p==='competitors'){fillComp();initComp();}if(p==='posts')fillPosts();}
+
+let ovB=false,ovVolChart=null;
+function initOv(){fillOvTopics();fillOvEnts();if(ovB)return;ovB=true;
+ ovVolChart=new Chart(document.getElementById('ovVol'),{type:'bar',data:{labels:DAYS(),datasets:[{data:[380,410,430,470,520,560,470],backgroundColor:'#4f6ef7'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});}
+
+const TREND_DATA={
+ '24h':{tMent:[[5,8,14,22,30,38,44],[10,14,18,24,30,36,40]],tTone:[[28,32,38,45,50,55,58],[20,19,19,18,17,17,16]]},
+ '7d':{tMent:[[40,55,70,90,110,130,150],[90,100,115,130,145,160,175]],tTone:[[35,38,42,46,50,54,58],[20,19,19,18,18,17,17]]},
+ '30d':{tMent:[[150,280,430,610],[420,540,680,840]],tTone:[[32,42,52,60],[21,19,17,17]]}
+};
+function trendLabels(key){if(key==='24h')return ['00h','04h','08h','12h','16h','20h','24h'];if(key==='30d')return LANG==='en'?['Week 1','Week 2','Week 3','Week 4']:['Tuần 1','Tuần 2','Tuần 3','Tuần 4'];return DAYS();}
+let tB=false,tMentChart=null,tToneChart=null,tMentKey='7d',tToneKey='7d';
+function initTrends(){fillT5();if(tB)return;tB=true;
+ const pm=TREND_DATA[tMentKey],pt=TREND_DATA[tToneKey];
+ tMentChart=new Chart(document.getElementById('tMent'),{type:'line',data:{labels:trendLabels(tMentKey),datasets:[
+  {label:'Product recall',data:pm.tMent[0],borderColor:'#dc2626',tension:.3},
+  {label:'Beta trend',data:pm.tMent[1],borderColor:'#16a34a',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true}}}});
+ tToneChart=new Chart(document.getElementById('tTone'),{type:'line',data:{labels:trendLabels(tToneKey),datasets:[
+  {label:`Product recall · ${TXT('u.pctNeedsAttention')}`,data:pt.tTone[0],borderColor:'#dc2626',tension:.3},
+  {label:`Beta trend · ${TXT('u.pctNeedsAttention')}`,data:pt.tTone[1],borderColor:'#16a34a',tension:.3}]},options:{plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true,max:100}}}});}
+function setTrendWindow(which,key){
+ const p=TREND_DATA[key];if(!p)return;
+ if(which==='tMent')tMentKey=key;else tToneKey=key;
+ const chart=which==='tMent'?tMentChart:tToneChart;if(!chart)return;
+ chart.data.labels=trendLabels(key);
+ chart.data.datasets[0].data=p[which][0];
+ chart.data.datasets[1].data=p[which][1];
+ chart.update();}
+let cB=false,cShareChart=null;
+function initComp(){if(cB)return;cB=true;cShareChart=new Chart(document.getElementById('cShare'),{type:'doughnut',data:{labels:['Alpha Brand','Beta Org','Gamma Corp'],datasets:[{data:[500,320,210],backgroundColor:['#4f6ef7','#16a34a','#8b5cf6'],borderWidth:2,borderColor:'#fff'}]},options:{plugins:{legend:{position:'bottom'}},cutout:'58%'}});}
+
+function applyI18nDom(){
+ document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');const v=I18N[LANG]&&I18N[LANG][k];if(v!==undefined)el.textContent=v;});
+ document.querySelectorAll('[data-i18n-html]').forEach(el=>{const k=el.getAttribute('data-i18n-html');const v=I18N[LANG]&&I18N[LANG][k];if(v!==undefined)el.innerHTML=v;});
+ document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const k=el.getAttribute('data-i18n-placeholder');const v=I18N[LANG]&&I18N[LANG][k];if(v!==undefined)el.placeholder=v;});
+}
+function currentPage(){const el=document.querySelector('.page.active');return el?el.id.replace('p-',''):'overview';}
+function setLang(lang){
+ if(lang===LANG)return;
+ LANG=lang;
+ document.documentElement.lang=lang;
+ applyI18nDom();
+ document.getElementById('langBtnVI').classList.toggle('active',lang==='vi');
+ document.getElementById('langBtnEN').classList.toggle('active',lang==='en');
+ if(ovVolChart){ovVolChart.destroy();ovVolChart=null;}ovB=false;
+ if(tMentChart){tMentChart.destroy();tMentChart=null;}
+ if(tToneChart){tToneChart.destroy();tToneChart=null;}tB=false;
+ if(cShareChart){cShareChart.destroy();cShareChart=null;}cB=false;
+ fillEntities();fillOvTopics();fillOvEnts();fillComp();fillPosts();fillT5();
+ const p=currentPage();
+ if(p==='overview')initOv();if(p==='trends')initTrends();if(p==='competitors')initComp();
+ const pc=document.getElementById('periodControls');if(pc)pc.style.display=CFG_PAGES.includes(p)?'none':'flex';
+}
+applyI18nDom();
+initOv();
+</script>
+</body>
 </html>
